@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
+import 'package:hour_tracker/controllers/project_controller.dart';
 import 'package:hour_tracker/controllers/settings_controller.dart';
 import 'package:hour_tracker/controllers/time_entry_controller.dart';
 import 'package:hour_tracker/controllers/timer_controller.dart';
 import 'package:hour_tracker/screens/add_edit_entry_screen.dart';
+import 'package:hour_tracker/screens/add_edit_project_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 
@@ -23,26 +25,28 @@ class DashboardTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Greeting & Quick Action Header
+          // Header Row: App Title & Add Log Button
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomAppText(
-                    text: AppStrings.appName,
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.bold,
-                    color: textPrimary,
-                  ),
-                  SizedBox(height: 2.h),
-                  CustomAppText(
-                    text: "Track your time & earn smartly",
-                    fontSize: 13.sp,
-                    color: textSecondary,
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomAppText(
+                      text: AppStrings.appName,
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.bold,
+                      color: textPrimary,
+                    ),
+                    SizedBox(height: 2.h),
+                    CustomAppText(
+                      text: "Track hours, calculate earnings & export reports",
+                      fontSize: 12.sp,
+                      color: textSecondary,
+                    ),
+                  ],
+                ),
               ),
               CustomOpacityWidget(
                 onTap: () => Get.to(() => const AddEditEntryScreen()),
@@ -72,16 +76,107 @@ class DashboardTab extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: 20.h),
+          SizedBox(height: 16.h),
 
-          // Active Timer Quick Banner (if timer is running)
+          // Getting Started Onboarding Hero Banner (When 0 Projects exist)
+          GetBuilder<ProjectController>(
+            builder: (projCtrl) {
+              if (projCtrl.projects.isNotEmpty) return const SizedBox.shrink();
+              return Container(
+                width: double.infinity,
+                margin: EdgeInsets.only(bottom: 20.h),
+                padding: EdgeInsets.all(20.r),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [const Color(0xFF4834DF), const Color(0xFF6C5CE7)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20.r),
+                  boxShadow: [
+                    BoxShadow(color: primaryColor.withValues(alpha: 0.35), blurRadius: 14.r, offset: const Offset(0, 6)),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(10.r),
+                          decoration: BoxDecoration(
+                            color: white.withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.rocket_launch_rounded, color: accentColor, size: 24.sp),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomAppText(
+                                text: "Welcome to Hour Tracker! 👋",
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold,
+                                color: white,
+                              ),
+                              SizedBox(height: 2.h),
+                              CustomAppText(
+                                text: "Let's set up your first project to get started",
+                                fontSize: 12.sp,
+                                color: white.withValues(alpha: 0.85),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.h),
+                    CustomAppText(
+                      text: "• Step 1: Create a Project & set hourly rate\n• Step 2: Track hours using Live Timer or manual entries\n• Step 3: View analytics & export PDF reports",
+                      fontSize: 12.sp,
+                      color: white.withValues(alpha: 0.9),
+                    ),
+
+                    SizedBox(height: 16.h),
+                    CustomOpacityWidget(
+                      onTap: () => Get.to(() => const AddEditProjectScreen()),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+                        decoration: BoxDecoration(
+                          color: white,
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add_circle_outline_rounded, color: primaryColor, size: 18.sp),
+                            SizedBox(width: 8.w),
+                            CustomAppText(
+                              text: "Create First Project",
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+
+          // Active Timer Quick Access Banner (if timer running)
           GetBuilder<TimerController>(
             builder: (timerCtrl) {
               if (!timerCtrl.isRunning) return const SizedBox.shrink();
               return Padding(
                 padding: EdgeInsets.only(bottom: 20.h),
                 child: CustomOpacityWidget(
-                  onTap: () => onNavigateToTab(1), // Switch to Timer tab
+                  onTap: () => onNavigateToTab(1),
                   child: Container(
                     padding: EdgeInsets.all(16.r),
                     decoration: BoxDecoration(
@@ -113,7 +208,7 @@ class DashboardTab extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 CustomAppText(
-                                  text: timerCtrl.isPaused ? "Timer Paused" : "Timer Running...",
+                                  text: timerCtrl.isPaused ? "Timer Paused" : "Live Timer Active",
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.bold,
                                   color: white,
@@ -141,12 +236,84 @@ class DashboardTab extends StatelessWidget {
             },
           ),
 
-          // Main Financial & Hours Summary Cards
+          // Quick Action Shortcuts Bar
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+            decoration: BoxDecoration(
+              color: cardBgColor,
+              borderRadius: BorderRadius.circular(16.r),
+              boxShadow: [
+                BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                CustomOpacityWidget(
+                  onTap: () => onNavigateToTab(1), // Go to Timer tab
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(10.r),
+                        decoration: BoxDecoration(
+                          color: primaryColor.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.play_arrow_rounded, color: primaryColor, size: 22.sp),
+                      ),
+                      SizedBox(height: 4.h),
+                      CustomAppText(text: "Start Timer", fontSize: 11.sp, fontWeight: FontWeight.w600, color: textPrimary),
+                    ],
+                  ),
+                ),
+                Container(height: 30.h, width: 1.w, color: dividerColor),
+                CustomOpacityWidget(
+                  onTap: () => Get.to(() => const AddEditEntryScreen()),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(10.r),
+                        decoration: BoxDecoration(
+                          color: billableColor.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.edit_note_rounded, color: billableColor, size: 22.sp),
+                      ),
+                      SizedBox(height: 4.h),
+                      CustomAppText(text: "Log Hours", fontSize: 11.sp, fontWeight: FontWeight.w600, color: textPrimary),
+                    ],
+                  ),
+                ),
+                Container(height: 30.h, width: 1.w, color: dividerColor),
+                CustomOpacityWidget(
+                  onTap: () => Get.to(() => const AddEditProjectScreen()),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(10.r),
+                        decoration: BoxDecoration(
+                          color: accentColor.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.create_new_folder_rounded, color: primaryDark, size: 22.sp),
+                      ),
+                      SizedBox(height: 4.h),
+                      CustomAppText(text: "New Project", fontSize: 11.sp, fontWeight: FontWeight.w600, color: textPrimary),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(height: 20.h),
+
+          // Financial Summary Cards
           GetBuilder<TimeEntryController>(
             builder: (entryCtrl) {
               return Column(
                 children: [
-                  // Earnings Hero Card
+                  // Weekly Earnings Hero Card
                   Container(
                     width: double.infinity,
                     padding: EdgeInsets.all(20.r),
@@ -230,7 +397,7 @@ class DashboardTab extends StatelessWidget {
 
                   SizedBox(height: 16.h),
 
-                  // 2 Grid Cards: Total Hours & Billable Hours
+                  // Today & Weekly Hours Grid
                   Row(
                     children: [
                       Expanded(
@@ -379,7 +546,7 @@ class DashboardTab extends StatelessWidget {
                 color: textPrimary,
               ),
               CustomOpacityWidget(
-                onTap: () => onNavigateToTab(2), // Switch to Work Logs & Calendar tab
+                onTap: () => onNavigateToTab(2),
                 child: CustomAppText(
                   text: "View All",
                   fontSize: 13.sp,
@@ -439,7 +606,7 @@ class DashboardTab extends StatelessWidget {
                           width: 4.w,
                           height: 40.h,
                           decoration: BoxDecoration(
-                            color: Color(int.parse(entry.projectColor)),
+                            color: parseColorHex(entry.projectColor),
                             borderRadius: BorderRadius.circular(4.r),
                           ),
                         ),

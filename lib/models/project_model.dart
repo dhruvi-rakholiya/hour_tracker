@@ -60,4 +60,15 @@ class ProjectModel {
       createdAt: createdAt ?? this.createdAt,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is ProjectModel &&
+        (id != null && other.id != null ? id == other.id : name == other.name);
+  }
+
+  @override
+  int get hashCode => id != null ? id.hashCode : name.hashCode;
 }
+

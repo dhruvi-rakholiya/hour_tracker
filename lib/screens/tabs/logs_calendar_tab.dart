@@ -201,10 +201,11 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
                                       width: 12.w,
                                       height: 12.w,
                                       decoration: BoxDecoration(
-                                        color: Color(int.parse(entry.projectColor)),
+                                        color: parseColorHex(entry.projectColor),
                                         shape: BoxShape.circle,
                                       ),
                                     ),
+
                                     SizedBox(width: 8.w),
                                     CustomAppText(
                                       text: entry.projectName,

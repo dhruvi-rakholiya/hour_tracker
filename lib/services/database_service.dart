@@ -88,81 +88,10 @@ class DatabaseService {
       )
     ''');
 
-    // Seed initial settings & sample projects
+    // Seed initial default settings only (NO mock data)
     await db.insert('user_settings', UserSettingsModel().toMap());
-    
-    final sampleProject1 = ProjectModel(
-      name: 'Mobile App Development',
-      clientName: 'Acme Corp',
-      hourlyRate: 45.0,
-      colorHex: '0xFF6C5CE7',
-      targetHours: 40.0,
-    );
-
-    final sampleProject2 = ProjectModel(
-      name: 'UI/UX Design Strategy',
-      clientName: 'Design Studio',
-      hourlyRate: 35.0,
-      colorHex: '0xFF00CEC9',
-      targetHours: 20.0,
-    );
-
-    final p1Id = await db.insert('projects', sampleProject1.toMap());
-    final p2Id = await db.insert('projects', sampleProject2.toMap());
-
-    await db.insert('tasks', TaskModel(projectId: p1Id, name: 'Flutter Coding').toMap());
-    await db.insert('tasks', TaskModel(projectId: p1Id, name: 'Code Review').toMap());
-    await db.insert('tasks', TaskModel(projectId: p2Id, name: 'Wireframing').toMap());
-
-    // Seed sample time entries for past 3 days so dashboard/graphs look great immediately!
-    final now = DateTime.now();
-    final yesterday = now.subtract(const Duration(days: 1));
-    final twoDaysAgo = now.subtract(const Duration(days: 2));
-
-    await db.insert('time_entries', TimeEntryModel(
-      projectId: p1Id,
-      projectName: 'Mobile App Development',
-      projectColor: '0xFF6C5CE7',
-      taskName: 'Flutter Coding',
-      startTime: twoDaysAgo.subtract(const Duration(hours: 8)),
-      endTime: twoDaysAgo.subtract(const Duration(hours: 3)),
-      durationMinutes: 300,
-      breakMinutes: 30,
-      hourlyRate: 45.0,
-      isBillable: true,
-      notes: 'Initial state setup and architecture design',
-    ).toMap());
-
-    await db.insert('time_entries', TimeEntryModel(
-      projectId: p1Id,
-      projectName: 'Mobile App Development',
-      projectColor: '0xFF6C5CE7',
-      taskName: 'Code Review',
-      startTime: yesterday.subtract(const Duration(hours: 6)),
-      endTime: yesterday.subtract(const Duration(hours: 1)),
-      durationMinutes: 300,
-      breakMinutes: 15,
-      hourlyRate: 45.0,
-      isBillable: true,
-      isOvertime: true,
-      overtimeMultiplier: 1.5,
-      notes: 'Implemented database service and models',
-    ).toMap());
-
-    await db.insert('time_entries', TimeEntryModel(
-      projectId: p2Id,
-      projectName: 'UI/UX Design Strategy',
-      projectColor: '0xFF00CEC9',
-      taskName: 'Wireframing',
-      startTime: now.subtract(const Duration(hours: 4)),
-      endTime: now.subtract(const Duration(hours: 1)),
-      durationMinutes: 180,
-      breakMinutes: 0,
-      hourlyRate: 35.0,
-      isBillable: false,
-      notes: 'Design review and team meeting',
-    ).toMap());
   }
+
 
   // --- PROJECTS CRUD ---
   Future<List<ProjectModel>> getProjects() async {

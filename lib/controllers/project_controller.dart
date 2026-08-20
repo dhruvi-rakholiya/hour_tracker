@@ -31,6 +31,9 @@ class ProjectController extends GetxController {
           selectedProject = found ?? projects.first;
         }
         await loadTasksForProject(selectedProject!.id!);
+      } else {
+        selectedProject = null;
+        selectedTask = null;
       }
     } catch (e) {
       showToast("Error loading projects");

@@ -56,6 +56,45 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
     settingsCtrl.updateSettings(newSettings);
   }
 
+  void _showAddTaskDialog(BuildContext context, ProjectController projCtrl, int projectId) {
+    _taskInputCtrl.clear();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+          title: const CustomAppText(text: "Add Task / Sub-item", fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary),
+          content: TextField(
+            controller: _taskInputCtrl,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: "Task name (e.g., Code Review)",
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const CustomAppText(text: "Cancel", color: textSecondary),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final name = _taskInputCtrl.text.trim();
+                if (name.isNotEmpty) {
+                  projCtrl.addTask(projectId, name);
+                  Get.back();
+                }
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
+              child: const CustomAppText(text: "Add", color: white, fontWeight: FontWeight.bold),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -143,7 +182,7 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                               width: 14.w,
                               height: 14.w,
                               decoration: BoxDecoration(
-                                color: Color(int.parse(p.colorHex)),
+                                color: parseColorHex(p.colorHex),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -188,11 +227,28 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                           ],
                         ),
 
-                        // Sub-tasks section
-                        if (tasks.isNotEmpty) ...[
-                          Divider(height: 20.h, color: dividerColor),
-                          CustomAppText(text: "Tasks / Items:", fontSize: 12.sp, fontWeight: FontWeight.bold, color: textSecondary),
-                          SizedBox(height: 6.h),
+                        // Sub-tasks section with Add Task Action
+                        Divider(height: 20.h, color: dividerColor),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomAppText(text: "Tasks / Scope Items:", fontSize: 12.sp, fontWeight: FontWeight.bold, color: textSecondary),
+                            CustomOpacityWidget(
+                              onTap: () => _showAddTaskDialog(context, projCtrl, p.id!),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.add_circle_outline_rounded, size: 14.sp, color: primaryColor),
+                                  SizedBox(width: 4.w),
+                                  CustomAppText(text: "Add Task", fontSize: 11.sp, fontWeight: FontWeight.bold, color: primaryColor),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8.h),
+                        if (tasks.isEmpty)
+                          CustomAppText(text: "No tasks added yet", fontSize: 11.sp, color: textMuted)
+                        else
                           Wrap(
                             spacing: 8.w,
                             runSpacing: 6.h,
@@ -217,7 +273,7 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                               );
                             }).toList(),
                           ),
-                        ],
+
                       ],
                     ),
                   );

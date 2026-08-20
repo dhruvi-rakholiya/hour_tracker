@@ -203,6 +203,30 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
             // Project Selector Card
             GetBuilder<ProjectController>(
               builder: (projCtrl) {
+                if (projCtrl.projects.isEmpty) {
+                  return Container(
+                    padding: EdgeInsets.all(16.r),
+                    decoration: BoxDecoration(
+                      color: cardBgColor,
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 24.sp),
+                        SizedBox(width: 10.w),
+                        Expanded(
+                          child: CustomAppText(
+                            text: "No projects found. Please create a project first.",
+                            fontSize: 13.sp,
+                            color: textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
                 return Container(
                   padding: EdgeInsets.all(16.r),
                   decoration: BoxDecoration(
@@ -236,7 +260,7 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                                     width: 12.w,
                                     height: 12.w,
                                     decoration: BoxDecoration(
-                                      color: Color(int.parse(p.colorHex)),
+                                      color: parseColorHex(p.colorHex),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -266,6 +290,7 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                 );
               },
             ),
+
 
             SizedBox(height: 16.h),
 

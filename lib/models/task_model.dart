@@ -28,4 +28,15 @@ class TaskModel {
       createdAt: map['created_at'] as String? ?? DateTime.now().toIso8601String(),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is TaskModel &&
+        (id != null && other.id != null ? id == other.id : (projectId == other.projectId && name == other.name));
+  }
+
+  @override
+  int get hashCode => id != null ? id.hashCode : Object.hash(projectId, name);
 }
+

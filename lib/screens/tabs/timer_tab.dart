@@ -6,6 +6,7 @@ import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/controllers/project_controller.dart';
 import 'package:hour_tracker/controllers/timer_controller.dart';
 import 'package:hour_tracker/models/project_model.dart';
+import 'package:hour_tracker/screens/add_edit_project_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 
@@ -17,12 +18,10 @@ class TimerTab extends StatefulWidget {
 }
 
 class _TimerTabState extends State<TimerTab> {
-  final TextEditingController _taskCtrl = TextEditingController();
   final TextEditingController _notesCtrl = TextEditingController();
 
   @override
   void dispose() {
-    _taskCtrl.dispose();
     _notesCtrl.dispose();
     super.dispose();
   }
@@ -44,11 +43,54 @@ class _TimerTabState extends State<TimerTab> {
               ),
               SizedBox(height: 16.h),
 
-              // Project Selector Dropdown
+              // Project Selector Dropdown & Add Button
               GetBuilder<ProjectController>(
                 builder: (projCtrl) {
+                  if (projCtrl.projects.isEmpty) {
+                    return Container(
+                      padding: EdgeInsets.all(16.r),
+                      decoration: BoxDecoration(
+                        color: cardBgColor,
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
+                        boxShadow: [
+                          BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.folder_open_rounded, color: primaryColor, size: 24.sp),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: CustomAppText(
+                              text: "No project selected. Create a project to log time.",
+                              fontSize: 13.sp,
+                              color: textSecondary,
+                            ),
+                          ),
+                          CustomOpacityWidget(
+                            onTap: () => Get.to(() => const AddEditProjectScreen()),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                              decoration: BoxDecoration(
+                                color: primaryColor,
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                              child: CustomAppText(
+                                text: "+ Create",
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.bold,
+                                color: white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
                   return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
                     decoration: BoxDecoration(
                       color: cardBgColor,
                       borderRadius: BorderRadius.circular(16.r),
@@ -56,43 +98,55 @@ class _TimerTabState extends State<TimerTab> {
                         BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
                       ],
                     ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<ProjectModel>(
-                        isExpanded: true,
-                        value: timerCtrl.selectedProject ?? projCtrl.selectedProject,
-                        hint: const CustomAppText(text: AppStrings.noProjectSelected, color: textMuted),
-                        items: projCtrl.projects.map((p) {
-                          return DropdownMenuItem<ProjectModel>(
-                            value: p,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 12.w,
-                                  height: 12.w,
-                                  decoration: BoxDecoration(
-                                    color: Color(int.parse(p.colorHex)),
-                                    shape: BoxShape.circle,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<ProjectModel>(
+                              isExpanded: true,
+                              value: timerCtrl.selectedProject ?? projCtrl.selectedProject,
+                              hint: const CustomAppText(text: AppStrings.noProjectSelected, color: textMuted),
+                              items: projCtrl.projects.map((p) {
+                                return DropdownMenuItem<ProjectModel>(
+                                  value: p,
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 12.w,
+                                        height: 12.w,
+                                        decoration: BoxDecoration(
+                                          color: parseColorHex(p.colorHex),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      CustomAppText(
+                                        text: p.name,
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: textPrimary,
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                SizedBox(width: 10.w),
-                                CustomAppText(
-                                  text: p.name,
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: textPrimary,
-                                ),
-                              ],
+                                );
+                              }).toList(),
+                              onChanged: timerCtrl.isRunning
+                                  ? null
+                                  : (p) {
+                                      if (p != null) {
+                                        timerCtrl.setProject(p);
+                                      }
+                                    },
                             ),
-                          );
-                        }).toList(),
-                        onChanged: timerCtrl.isRunning
-                            ? null
-                            : (p) {
-                                if (p != null) {
-                                  timerCtrl.setProject(p);
-                                }
-                              },
-                      ),
+                          ),
+                        ),
+                        if (!timerCtrl.isRunning)
+                          IconButton(
+                            icon: Icon(Icons.add_circle_outline_rounded, color: primaryColor, size: 22.sp),
+                            onPressed: () => Get.to(() => const AddEditProjectScreen()),
+                            tooltip: "Add New Project",
+                          ),
+                      ],
                     ),
                   );
                 },
@@ -294,7 +348,6 @@ class _TimerTabState extends State<TimerTab> {
                           activeTrackColor: billableColor,
                           onChanged: timerCtrl.toggleBillable,
                         ),
-
                       ],
                     ),
                     Divider(height: 24.h, color: dividerColor),

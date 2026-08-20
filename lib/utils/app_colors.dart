@@ -42,4 +42,23 @@ const LinearGradient billableGradient = LinearGradient(
   colors: [Color(0xFF34D399), Color(0xFF059669)],
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
-);
+);
+
+Color parseColorHex(String? hexString, {Color fallback = primaryColor}) {
+  if (hexString == null || hexString.trim().isEmpty) return fallback;
+  try {
+    String cleanHex = hexString.trim().replaceAll('#', '');
+    if (cleanHex.startsWith('0x') || cleanHex.startsWith('0X')) {
+      cleanHex = cleanHex.substring(2);
+    }
+    if (cleanHex.length == 6) {
+      cleanHex = 'FF$cleanHex';
+    }
+    if (cleanHex.length == 8) {
+      final val = int.parse(cleanHex, radix: 16);
+      return Color(val);
+    }
+  } catch (_) {}
+  return fallback;
+}
+
