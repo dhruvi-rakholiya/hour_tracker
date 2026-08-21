@@ -11,6 +11,7 @@ import 'package:hour_tracker/controllers/timer_controller.dart';
 import 'package:hour_tracker/screens/add_edit_entry_screen.dart';
 import 'package:hour_tracker/screens/add_edit_project_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
+import 'package:hour_tracker/utils/app_formatters.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 
 class DashboardTab extends StatelessWidget {
@@ -25,7 +26,7 @@ class DashboardTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Row: App Title & Add Log Button
+          // Header Row: App  Title & Add Log Button
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -422,7 +423,7 @@ class DashboardTab extends StatelessWidget {
                               ),
                               SizedBox(height: 10.h),
                               CustomAppText(
-                                text: "${entryCtrl.todayTotalHours.toStringAsFixed(1)} hrs",
+                                text: formatHoursToDuration(entryCtrl.todayTotalHours),
                                 fontSize: 20.sp,
                                 fontWeight: FontWeight.bold,
                                 color: textPrimary,
@@ -454,7 +455,7 @@ class DashboardTab extends StatelessWidget {
                               ),
                               SizedBox(height: 10.h),
                               CustomAppText(
-                                text: "${entryCtrl.weeklyTotalHours.toStringAsFixed(1)} hrs",
+                                text: formatHoursToDuration(entryCtrl.weeklyTotalHours),
                                 fontSize: 20.sp,
                                 fontWeight: FontWeight.bold,
                                 color: textPrimary,
@@ -502,7 +503,7 @@ class DashboardTab extends StatelessWidget {
                           color: textPrimary,
                         ),
                         CustomAppText(
-                          text: "${workedToday.toStringAsFixed(1)} / ${dailyTarget.toStringAsFixed(0)} hrs",
+                          text: "${formatHoursToDuration(workedToday)} / ${formatHoursToDuration(dailyTarget)}",
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
                           color: primaryColor,
@@ -523,7 +524,7 @@ class DashboardTab extends StatelessWidget {
                     CustomAppText(
                       text: progress >= 1.0
                           ? "🎉 Great job! Daily goal achieved!"
-                          : "${((1 - progress) * dailyTarget).toStringAsFixed(1)} hours remaining to reach today's target.",
+                          : "${formatHoursToDuration((1 - progress) * dailyTarget, short: false)} remaining to reach today's target.",
                       fontSize: 12.sp,
                       color: progress >= 1.0 ? successColor : textSecondary,
                     ),
@@ -641,7 +642,7 @@ class DashboardTab extends StatelessWidget {
                             ),
                             SizedBox(height: 4.h),
                             CustomAppText(
-                              text: "${(entry.netWorkMinutes / 60.0).toStringAsFixed(1)} hrs",
+                              text: entry.formattedDuration,
                               fontSize: 12.sp,
                               color: textMuted,
                             ),

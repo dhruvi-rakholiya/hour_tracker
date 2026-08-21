@@ -1,3 +1,5 @@
+import 'package:hour_tracker/utils/app_formatters.dart';
+
 class TimeEntryModel {
   final int? id;
   final int? projectId;
@@ -41,6 +43,8 @@ class TimeEntryModel {
   }
 
   double get netWorkHours => netWorkMinutes / 60.0;
+
+  String get formattedDuration => formatMinutesToDuration(netWorkMinutes);
 
   double get totalEarnings {
     if (!isBillable) return 0.0;

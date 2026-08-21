@@ -7,6 +7,7 @@ import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/controllers/project_controller.dart';
 import 'package:hour_tracker/controllers/report_controller.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
+import 'package:hour_tracker/utils/app_formatters.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 
 class ReportsTab extends StatelessWidget {
@@ -231,7 +232,7 @@ class ReportsTab extends StatelessWidget {
                                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                                       final day = chartData[group.x.toInt()]['day'];
                                       return BarTooltipItem(
-                                        '$day\n${rod.toY.toStringAsFixed(1)} hrs',
+                                        '$day\n${formatHoursToDuration(rod.toY)}',
                                         TextStyle(color: white, fontWeight: FontWeight.bold, fontSize: 12.sp),
                                       );
                                     },
@@ -310,7 +311,7 @@ class ReportsTab extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: _buildStatCard("Total Hours", "${reportCtrl.reportTotalHours.toStringAsFixed(1)} hrs", Icons.schedule_rounded, primaryColor),
+                        child: _buildStatCard("Total Hours", formatHoursToDuration(reportCtrl.reportTotalHours), Icons.schedule_rounded, primaryColor),
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
@@ -322,11 +323,11 @@ class ReportsTab extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: _buildStatCard("Billable Hours", "${reportCtrl.reportBillableHours.toStringAsFixed(1)} hrs", Icons.check_circle_rounded, billableColor),
+                        child: _buildStatCard("Billable Hours", formatHoursToDuration(reportCtrl.reportBillableHours), Icons.check_circle_rounded, billableColor),
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
-                        child: _buildStatCard("Avg Daily", "${reportCtrl.avgDailyHours.toStringAsFixed(1)} hrs", Icons.trending_up_rounded, accentColor),
+                        child: _buildStatCard("Avg Daily", formatHoursToDuration(reportCtrl.avgDailyHours), Icons.trending_up_rounded, accentColor),
                       ),
                     ],
                   ),
@@ -380,7 +381,7 @@ class ReportsTab extends StatelessWidget {
                                 ],
                               ),
                               CustomAppText(
-                                text: "${item.totalHours.toStringAsFixed(1)} hrs (${item.percentage.toStringAsFixed(0)}%)",
+                                text: "${formatHoursToDuration(item.totalHours)} (${item.percentage.toStringAsFixed(0)}%)",
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.bold,
                                 color: textPrimary,

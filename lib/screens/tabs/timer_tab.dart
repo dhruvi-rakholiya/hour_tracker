@@ -7,6 +7,7 @@ import 'package:hour_tracker/controllers/project_controller.dart';
 import 'package:hour_tracker/controllers/timer_controller.dart';
 import 'package:hour_tracker/models/project_model.dart';
 import 'package:hour_tracker/screens/add_edit_project_screen.dart';
+import 'package:hour_tracker/screens/focus_mode_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 
@@ -150,6 +151,95 @@ class _TimerTabState extends State<TimerTab> {
                     ),
                   );
                 },
+              ),
+
+              SizedBox(height: 16.h),
+
+              // Focus Mode Launch Card & Switch
+              Container(
+                padding: EdgeInsets.all(14.r),
+                decoration: BoxDecoration(
+                  color: cardBgColor,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: primaryColor.withValues(alpha: 0.25)),
+                  boxShadow: [
+                    BoxShadow(color: shadowColor, blurRadius: 8.r, offset: const Offset(0, 3)),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8.r),
+                      decoration: BoxDecoration(
+                        color: primaryColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: Icon(Icons.center_focus_strong_rounded, color: primaryColor, size: 22.sp),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomAppText(
+                            text: "Focus Mode",
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimary,
+                          ),
+                          SizedBox(height: 2.h),
+                          CustomAppText(
+                            text: "Full-screen timer view",
+                            fontSize: 11.sp,
+                            color: textMuted,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    CustomOpacityWidget(
+                      onTap: () {
+                        timerCtrl.toggleFocusMode(true);
+                        Get.to(() => const FocusModeScreen());
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                        decoration: BoxDecoration(
+                          gradient: primaryGradient,
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.fullscreen_rounded, color: white, size: 16.sp),
+                            SizedBox(width: 4.w),
+                            CustomAppText(
+                              text: "Focus",
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.bold,
+                              color: white,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 6.w),
+                    Transform.scale(
+                      scale: 0.85,
+                      child: Switch.adaptive(
+                        value: timerCtrl.isFocusMode,
+                        activeColor: primaryColor,
+                        onChanged: (val) {
+                          timerCtrl.toggleFocusMode(val);
+                          if (val) {
+                            Get.to(() => const FocusModeScreen());
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
               SizedBox(height: 24.h),

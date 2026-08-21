@@ -15,6 +15,12 @@ class TimerController extends GetxController {
   bool isRunning = false;
   bool isPaused = false;
 
+  // Focus Mode state
+  bool isFocusMode = false;
+  bool isHorizontalOrientation = false;
+  bool showFocusControls = true;
+  Timer? _autoHideControlsTimer;
+
   DateTime? startTime;
   DateTime? pauseStartTime;
   int elapsedSeconds = 0;
@@ -210,9 +216,45 @@ class TimerController extends GetxController {
     showToast("Timer Reset");
   }
 
+  void toggleFocusMode(bool val) {
+    isFocusMode = val;
+    if (isFocusMode) {
+      showFocusControls = true;
+      _scheduleAutoHideControls();
+    }
+    update();
+  }
+
+  void toggleFocusOrientation() {
+    isHorizontalOrientation = !isHorizontalOrientation;
+    showFocusControls = true;
+    _scheduleAutoHideControls();
+    update();
+  }
+
+  void toggleFocusControls() {
+    showFocusControls = !showFocusControls;
+    if (showFocusControls) {
+      _scheduleAutoHideControls();
+    } else {
+      _autoHideControlsTimer?.cancel();
+    }
+    update();
+  }
+
+  void _scheduleAutoHideControls() {
+    _autoHideControlsTimer?.cancel();
+    _autoHideControlsTimer = Timer(const Duration(seconds: 4), () {
+      showFocusControls = false;
+      update();
+    });
+  }
+
   void _resetState() {
     isRunning = false;
     isPaused = false;
+    isFocusMode = false;
+    _autoHideControlsTimer?.cancel();
     startTime = null;
     pauseStartTime = null;
     elapsedSeconds = 0;
@@ -249,6 +291,7 @@ class TimerController extends GetxController {
   @override
   void onClose() {
     _timer?.cancel();
+    _autoHideControlsTimer?.cancel();
     super.onClose();
   }
 }

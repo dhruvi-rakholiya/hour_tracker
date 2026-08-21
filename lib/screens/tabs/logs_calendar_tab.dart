@@ -9,6 +9,7 @@ import 'package:hour_tracker/controllers/time_entry_controller.dart';
 
 import 'package:hour_tracker/screens/add_edit_entry_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
+import 'package:hour_tracker/utils/app_formatters.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 
 class LogsCalendarTab extends StatefulWidget {
@@ -129,7 +130,7 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
                           ),
                           SizedBox(height: 4.h),
                           CustomAppText(
-                            text: "${dayHours.toStringAsFixed(1)} hrs worked",
+                            text: "${formatHoursToDuration(dayHours, short: false)} worked",
                             fontSize: 12.sp,
                             color: white,
                           ),
@@ -275,7 +276,7 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 CustomAppText(
-                                  text: "Duration: ${(entry.netWorkMinutes / 60.0).toStringAsFixed(1)}h (Break: ${entry.breakMinutes}m)",
+                                  text: "Duration: ${entry.formattedDuration} (Break: ${entry.breakMinutes}m)",
                                   fontSize: 12.sp,
                                   color: textSecondary,
                                 ),

@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:hour_tracker/controllers/time_entry_controller.dart';
 import 'package:hour_tracker/models/time_entry_model.dart';
+import 'package:hour_tracker/utils/app_formatters.dart';
 import 'package:hour_tracker/utils/app_show_toast.dart';
 
 enum ReportFilterType { today, thisWeek, thisMonth, custom }
@@ -290,7 +291,7 @@ class ReportController extends GetxController {
                     pw.Column(children: [
                       pw.Text("Total Hours", style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
                       pw.SizedBox(height: 4),
-                      pw.Text("${reportTotalHours.toStringAsFixed(1)} hrs", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                      pw.Text(formatHoursToDuration(reportTotalHours), style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
                     ]),
                     pw.Column(children: [
                       pw.Text("Total Earnings", style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
@@ -300,12 +301,12 @@ class ReportController extends GetxController {
                     pw.Column(children: [
                       pw.Text("Billable Hours", style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
                       pw.SizedBox(height: 4),
-                      pw.Text("${reportBillableHours.toStringAsFixed(1)} hrs", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                      pw.Text(formatHoursToDuration(reportBillableHours), style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
                     ]),
                     pw.Column(children: [
                       pw.Text("Avg Daily", style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
                       pw.SizedBox(height: 4),
-                      pw.Text("${avgDailyHours.toStringAsFixed(1)} hrs", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                      pw.Text(formatHoursToDuration(avgDailyHours), style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
                     ]),
                   ],
                 ),
@@ -320,7 +321,7 @@ class ReportController extends GetxController {
                 data: breakdown.map((b) {
                   return [
                     b.projectName,
-                    '${b.totalHours.toStringAsFixed(1)}h',
+                    formatHoursToDuration(b.totalHours),
                     '\$${b.totalEarnings.toStringAsFixed(2)}',
                     '${b.percentage.toStringAsFixed(1)}%',
                   ];
@@ -345,7 +346,7 @@ class ReportController extends GetxController {
                     df.format(e.startTime),
                     e.projectName,
                     e.taskName.isNotEmpty ? e.taskName : (e.notes.isNotEmpty ? e.notes : '-'),
-                    '${(e.netWorkMinutes / 60.0).toStringAsFixed(1)}h',
+                    e.formattedDuration,
                     '\$${e.hourlyRate.toStringAsFixed(0)}',
                     '\$${e.totalEarnings.toStringAsFixed(2)}',
                   ];
