@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:hour_tracker/controllers/report_controller.dart';
 import 'package:hour_tracker/models/time_entry_model.dart';
 import 'package:hour_tracker/services/database_service.dart';
 import 'package:hour_tracker/utils/app_show_toast.dart';
@@ -23,6 +24,9 @@ class TimeEntryController extends GetxController {
     try {
       allEntries = await DatabaseService.instance.getAllTimeEntries();
       filterEntriesForSelectedDate(selectedDate);
+      if (Get.isRegistered<ReportController>()) {
+        Get.find<ReportController>().generateReportData();
+      }
     } catch (e) {
       showToast("Error loading time entries");
     } finally {

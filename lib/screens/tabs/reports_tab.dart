@@ -6,6 +6,7 @@ import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/controllers/project_controller.dart';
 import 'package:hour_tracker/controllers/report_controller.dart';
+import 'package:hour_tracker/controllers/time_entry_controller.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_formatters.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
@@ -29,6 +30,15 @@ class ReportsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<ReportController>(
       builder: (reportCtrl) {
+        if (reportCtrl.filteredReportEntries.isEmpty) {
+          final entryCtrl = Get.find<TimeEntryController>();
+          if (entryCtrl.allEntries.isNotEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              reportCtrl.generateReportData();
+            });
+          }
+        }
+
         final chartData = reportCtrl.getDailyChartData();
         final maxY = reportCtrl.maxChartY;
         final breakdown = reportCtrl.getProjectBreakdown();

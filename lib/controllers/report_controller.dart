@@ -106,8 +106,7 @@ class ReportController extends GetxController {
     }
 
     filteredReportEntries = all.where((e) {
-      return (e.startTime.isAfter(start.subtract(const Duration(milliseconds: 1))) &&
-          e.startTime.isBefore(end.add(const Duration(milliseconds: 1))));
+      return !e.startTime.isBefore(start) && !e.startTime.isAfter(end);
     }).toList();
 
     update();
