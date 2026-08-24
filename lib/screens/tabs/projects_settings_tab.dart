@@ -9,7 +9,6 @@ import 'package:hour_tracker/screens/add_edit_project_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 
-
 class ProjectsSettingsTab extends StatefulWidget {
   const ProjectsSettingsTab({super.key});
 
@@ -22,14 +21,18 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
   final TextEditingController _overtimeThreshCtrl = TextEditingController();
   final TextEditingController _overtimeMultCtrl = TextEditingController();
   final TextEditingController _taskInputCtrl = TextEditingController();
+  bool _enableNotifications = true;
 
   @override
   void initState() {
     super.initState();
     final settings = Get.find<SettingsController>().settings;
     _dailyTargetCtrl.text = settings.dailyTargetHours.toStringAsFixed(0);
-    _overtimeThreshCtrl.text = settings.overtimeThresholdDaily.toStringAsFixed(0);
+    _overtimeThreshCtrl.text = settings.overtimeThresholdDaily.toStringAsFixed(
+      0,
+    );
     _overtimeMultCtrl.text = settings.overtimeMultiplier.toStringAsFixed(1);
+    _enableNotifications = settings.enableNotifications;
   }
 
   @override
@@ -51,25 +54,39 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
       dailyTargetHours: daily,
       overtimeThresholdDaily: thresh,
       overtimeMultiplier: mult,
+      enableNotifications: _enableNotifications,
     );
 
     settingsCtrl.updateSettings(newSettings);
   }
 
-  void _showAddTaskDialog(BuildContext context, ProjectController projCtrl, int projectId) {
+  void _showAddTaskDialog(
+    BuildContext context,
+    ProjectController projCtrl,
+    int projectId,
+  ) {
     _taskInputCtrl.clear();
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-          title: const CustomAppText(text: "Add Task / Sub-item", fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.r),
+          ),
+          title: const CustomAppText(
+            text: "Add Task / Sub-item",
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: textPrimary,
+          ),
           content: TextField(
             controller: _taskInputCtrl,
             autofocus: true,
             decoration: InputDecoration(
               hintText: "Task name (e.g., Code Review)",
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
             ),
           ),
           actions: [
@@ -86,14 +103,17 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-              child: const CustomAppText(text: "Add", color: white, fontWeight: FontWeight.bold),
+              child: const CustomAppText(
+                text: "Add",
+                color: white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         );
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +135,10 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
               CustomOpacityWidget(
                 onTap: () => Get.to(() => const AddEditProjectScreen()),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 8.h,
+                  ),
                   decoration: BoxDecoration(
                     color: primaryColor,
                     borderRadius: BorderRadius.circular(12.r),
@@ -124,7 +147,12 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                     children: [
                       Icon(Icons.add_rounded, color: white, size: 16.sp),
                       SizedBox(width: 4.w),
-                      CustomAppText(text: "New Project", fontSize: 12.sp, fontWeight: FontWeight.bold, color: white),
+                      CustomAppText(
+                        text: "New Project",
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.bold,
+                        color: white,
+                      ),
                     ],
                   ),
                 ),
@@ -147,9 +175,17 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                   ),
                   child: Column(
                     children: [
-                      Icon(Icons.folder_open_rounded, size: 40.sp, color: textMuted),
+                      Icon(
+                        Icons.folder_open_rounded,
+                        size: 40.sp,
+                        color: textMuted,
+                      ),
                       SizedBox(height: 8.h),
-                      CustomAppText(text: "No projects created yet", fontSize: 14.sp, color: textSecondary),
+                      CustomAppText(
+                        text: "No projects created yet",
+                        fontSize: 14.sp,
+                        color: textSecondary,
+                      ),
                     ],
                   ),
                 );
@@ -170,7 +206,11 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                       color: cardBgColor,
                       borderRadius: BorderRadius.circular(16.r),
                       boxShadow: [
-                        BoxShadow(color: shadowColor, blurRadius: 8.r, offset: const Offset(0, 3)),
+                        BoxShadow(
+                          color: shadowColor,
+                          blurRadius: 8.r,
+                          offset: const Offset(0, 3),
+                        ),
                       ],
                     ),
                     child: Column(
@@ -216,13 +256,23 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                             ),
                             SizedBox(width: 8.w),
                             CustomOpacityWidget(
-                              onTap: () => Get.to(() => AddEditProjectScreen(existingProject: p)),
-                              child: Icon(Icons.edit_outlined, size: 18.sp, color: primaryColor),
+                              onTap: () => Get.to(
+                                () => AddEditProjectScreen(existingProject: p),
+                              ),
+                              child: Icon(
+                                Icons.edit_outlined,
+                                size: 18.sp,
+                                color: primaryColor,
+                              ),
                             ),
                             SizedBox(width: 8.w),
                             CustomOpacityWidget(
                               onTap: () => projCtrl.deleteProject(p.id!),
-                              child: Icon(Icons.delete_outline_rounded, size: 18.sp, color: dangerColor),
+                              child: Icon(
+                                Icons.delete_outline_rounded,
+                                size: 18.sp,
+                                color: dangerColor,
+                              ),
                             ),
                           ],
                         ),
@@ -232,14 +282,29 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            CustomAppText(text: "Tasks / Scope Items:", fontSize: 12.sp, fontWeight: FontWeight.bold, color: textSecondary),
+                            CustomAppText(
+                              text: "Tasks / Scope Items:",
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.bold,
+                              color: textSecondary,
+                            ),
                             CustomOpacityWidget(
-                              onTap: () => _showAddTaskDialog(context, projCtrl, p.id!),
+                              onTap: () =>
+                                  _showAddTaskDialog(context, projCtrl, p.id!),
                               child: Row(
                                 children: [
-                                  Icon(Icons.add_circle_outline_rounded, size: 14.sp, color: primaryColor),
+                                  Icon(
+                                    Icons.add_circle_outline_rounded,
+                                    size: 14.sp,
+                                    color: primaryColor,
+                                  ),
                                   SizedBox(width: 4.w),
-                                  CustomAppText(text: "Add Task", fontSize: 11.sp, fontWeight: FontWeight.bold, color: primaryColor),
+                                  CustomAppText(
+                                    text: "Add Task",
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: primaryColor,
+                                  ),
                                 ],
                               ),
                             ),
@@ -247,14 +312,21 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                         ),
                         SizedBox(height: 8.h),
                         if (tasks.isEmpty)
-                          CustomAppText(text: "No tasks added yet", fontSize: 11.sp, color: textMuted)
+                          CustomAppText(
+                            text: "No tasks added yet",
+                            fontSize: 11.sp,
+                            color: textMuted,
+                          )
                         else
                           Wrap(
                             spacing: 8.w,
                             runSpacing: 6.h,
                             children: tasks.map((t) {
                               return Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10.w,
+                                  vertical: 4.h,
+                                ),
                                 decoration: BoxDecoration(
                                   color: surfaceColor,
                                   borderRadius: BorderRadius.circular(12.r),
@@ -262,18 +334,26 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    CustomAppText(text: t.name, fontSize: 11.sp, color: textPrimary),
+                                    CustomAppText(
+                                      text: t.name,
+                                      fontSize: 11.sp,
+                                      color: textPrimary,
+                                    ),
                                     SizedBox(width: 4.w),
                                     CustomOpacityWidget(
-                                      onTap: () => projCtrl.deleteTask(t.id!, p.id!),
-                                      child: Icon(Icons.close_rounded, size: 14.sp, color: textMuted),
+                                      onTap: () =>
+                                          projCtrl.deleteTask(t.id!, p.id!),
+                                      child: Icon(
+                                        Icons.close_rounded,
+                                        size: 14.sp,
+                                        color: textMuted,
+                                      ),
                                     ),
                                   ],
                                 ),
                               );
                             }).toList(),
                           ),
-
                       ],
                     ),
                   );
@@ -293,7 +373,11 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                   color: cardBgColor,
                   borderRadius: BorderRadius.circular(16.r),
                   boxShadow: [
-                    BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
+                    BoxShadow(
+                      color: shadowColor,
+                      blurRadius: 10.r,
+                      offset: const Offset(0, 4),
+                    ),
                   ],
                 ),
                 child: Column(
@@ -311,17 +395,27 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CustomAppText(text: AppStrings.dailyTarget, fontSize: 13.sp, color: textSecondary),
+                        CustomAppText(
+                          text: AppStrings.dailyTarget,
+                          fontSize: 13.sp,
+                          color: textSecondary,
+                        ),
                         SizedBox(
                           width: 80.w,
                           child: TextField(
                             controller: _dailyTargetCtrl,
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.right,
-                            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: textPrimary),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
+                              color: textPrimary,
+                            ),
                             decoration: InputDecoration(
                               isDense: true,
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
                             ),
                           ),
                         ),
@@ -334,17 +428,27 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CustomAppText(text: AppStrings.overtimeThreshold, fontSize: 13.sp, color: textSecondary),
+                        CustomAppText(
+                          text: AppStrings.overtimeThreshold,
+                          fontSize: 13.sp,
+                          color: textSecondary,
+                        ),
                         SizedBox(
                           width: 80.w,
                           child: TextField(
                             controller: _overtimeThreshCtrl,
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.right,
-                            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: textPrimary),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
+                              color: textPrimary,
+                            ),
                             decoration: InputDecoration(
                               isDense: true,
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
                             ),
                           ),
                         ),
@@ -357,19 +461,67 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CustomAppText(text: AppStrings.overtimeMultiplier, fontSize: 13.sp, color: textSecondary),
+                        CustomAppText(
+                          text: AppStrings.overtimeMultiplier,
+                          fontSize: 13.sp,
+                          color: textSecondary,
+                        ),
                         SizedBox(
                           width: 80.w,
                           child: TextField(
                             controller: _overtimeMultCtrl,
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.right,
-                            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: textPrimary),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
+                              color: textPrimary,
+                            ),
                             decoration: InputDecoration(
                               isDense: true,
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
                             ),
                           ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 12.h),
+
+                    // Active Timer Notification Toggle
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomAppText(
+                                text: "Active Timer Notifications",
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.bold,
+                                color: textPrimary,
+                              ),
+                              SizedBox(height: 2.h),
+                              CustomAppText(
+                                text:
+                                    "Show status bar notification when timer is running",
+                                fontSize: 11.sp,
+                                color: textMuted,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Switch(
+                          value: _enableNotifications,
+                          activeColor: primaryColor,
+                          onChanged: (val) {
+                            setState(() {
+                              _enableNotifications = val;
+                            });
+                          },
                         ),
                       ],
                     ),
@@ -386,9 +538,13 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Center(
-                          child: CustomAppText(text: "Save Preferences", fontSize: 14.sp, fontWeight: FontWeight.bold, color: white),
+                          child: CustomAppText(
+                            text: "Save Preferences",
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                            color: white,
+                          ),
                         ),
-
                       ),
                     ),
                   ],
@@ -397,7 +553,7 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
             },
           ),
 
-          SizedBox(height: 20.h),
+          SizedBox(height: 80.h),
         ],
       ),
     );

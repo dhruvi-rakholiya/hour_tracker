@@ -151,16 +151,16 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                                 ),
                               ),
 
-                              // Focus Badge
+                              // Focus / Overtime Badge
                               Container(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: isLandscape ? 12.0 : 12.w,
                                   vertical: isLandscape ? 6.0 : 6.h,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: primaryColor.withValues(alpha: 0.2),
+                                  color: (timerCtrl.isOvertimeActive ? Colors.amber : primaryColor).withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(20.r),
-                                  border: Border.all(color: primaryColor.withValues(alpha: 0.4)),
+                                  border: Border.all(color: (timerCtrl.isOvertimeActive ? Colors.amber : primaryColor).withValues(alpha: 0.4)),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -168,16 +168,16 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                                     Container(
                                       width: isLandscape ? 6.0 : 8.w,
                                       height: isLandscape ? 6.0 : 8.w,
-                                      decoration: const BoxDecoration(color: primaryColor, shape: BoxShape.circle),
+                                      decoration: BoxDecoration(color: timerCtrl.isOvertimeActive ? Colors.amber[800] : primaryColor, shape: BoxShape.circle),
                                     ),
                                     SizedBox(width: isLandscape ? 6.0 : 6.w),
                                     Text(
-                                      "FOCUS MODE",
+                                      timerCtrl.isOvertimeActive ? "OVERTIME (1.5x)" : "FOCUS MODE",
                                       style: TextStyle(
                                         fontSize: isLandscape ? 11.0 : 11.sp,
                                         fontWeight: FontWeight.bold,
                                         letterSpacing: 1.1,
-                                        color: primaryColor,
+                                        color: timerCtrl.isOvertimeActive ? Colors.amber[900] ?? Colors.amber : primaryColor,
                                       ),
                                     ),
                                   ],
@@ -407,7 +407,7 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
         Expanded(
           child: _buildFlipCard(
             headerLabel: "\$${timerCtrl.liveEarnings.toStringAsFixed(2)}",
-            headerColor: billableColor,
+            headerColor: timerCtrl.isOvertimeActive ? Colors.amber : billableColor,
             digitsText: minsStr,
             footerText: "MINUTES",
             isLandscape: false,
@@ -419,8 +419,8 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
         // 3. SECONDS CARD
         Expanded(
           child: _buildFlipCard(
-            headerLabel: timerCtrl.isPaused ? "PAUSED" : "WORKING",
-            headerColor: timerCtrl.isPaused ? nonBillableColor : primaryColor,
+            headerLabel: timerCtrl.isPaused ? "PAUSED" : (timerCtrl.isOvertimeActive ? "OVERTIME" : "WORKING"),
+            headerColor: timerCtrl.isPaused ? nonBillableColor : (timerCtrl.isOvertimeActive ? Colors.amber : primaryColor),
             digitsText: secsStr,
             footerText: "SECONDS",
             isLandscape: false,
@@ -461,7 +461,7 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
           Expanded(
             child: _buildFlipCard(
               headerLabel: "\$${timerCtrl.liveEarnings.toStringAsFixed(2)}",
-              headerColor: billableColor,
+              headerColor: timerCtrl.isOvertimeActive ? Colors.amber : billableColor,
               digitsText: minsStr,
               footerText: "MINUTES",
               isLandscape: true,
@@ -473,8 +473,8 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
           // 3. SECONDS CARD
           Expanded(
             child: _buildFlipCard(
-              headerLabel: timerCtrl.isPaused ? "PAUSED" : "WORKING",
-              headerColor: timerCtrl.isPaused ? nonBillableColor : primaryColor,
+              headerLabel: timerCtrl.isPaused ? "PAUSED" : (timerCtrl.isOvertimeActive ? "OVERTIME" : "WORKING"),
+              headerColor: timerCtrl.isPaused ? nonBillableColor : (timerCtrl.isOvertimeActive ? Colors.amber : primaryColor),
               digitsText: secsStr,
               footerText: "SECONDS",
               isLandscape: true,

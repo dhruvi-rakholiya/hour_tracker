@@ -20,6 +20,30 @@ class NotificationService {
     );
 
     await _notificationsPlugin.initialize(settings);
+    await requestNotificationPermission();
+  }
+
+  Future<bool> requestNotificationPermission() async {
+    bool granted = true;
+    final androidImplementation = _notificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    if (androidImplementation != null) {
+      final bool? androidGranted = await androidImplementation.requestNotificationsPermission();
+      if (androidGranted != null) granted = androidGranted;
+    }
+
+    final iosImplementation = _notificationsPlugin
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+    if (iosImplementation != null) {
+      final bool? iosGranted = await iosImplementation.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      if (iosGranted != null) granted = iosGranted;
+    }
+
+    return granted;
   }
 
   Future<void> showTimerNotification({

@@ -244,18 +244,46 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
                                   fontSize: 13.sp,
                                   color: textSecondary,
                                 ),
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                                  decoration: BoxDecoration(
-                                    color: (entry.isBillable ? billableColor : nonBillableColor).withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(6.r),
-                                  ),
-                                  child: CustomAppText(
-                                    text: entry.isBillable ? "Billable" : "Non-Billable",
-                                    fontSize: 11.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: entry.isBillable ? billableColor : nonBillableColor,
-                                  ),
+                                Row(
+                                  children: [
+                                    if (entry.isOvertime) ...[
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                        decoration: BoxDecoration(
+                                          color: Colors.amber.withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(6.r),
+                                          border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.bolt_rounded, size: 12.sp, color: Colors.amber[800]),
+                                            SizedBox(width: 2.w),
+                                            CustomAppText(
+                                              text: "Overtime (${entry.overtimeMultiplier}x)",
+                                              fontSize: 11.sp,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.amber[900] ?? Colors.amber,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(width: 6.w),
+                                    ],
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                      decoration: BoxDecoration(
+                                        color: (entry.isBillable ? billableColor : nonBillableColor).withValues(alpha: 0.12),
+                                        borderRadius: BorderRadius.circular(6.r),
+                                      ),
+                                      child: CustomAppText(
+                                        text: entry.isBillable ? "Billable" : "Non-Billable",
+                                        fontSize: 11.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: entry.isBillable ? billableColor : nonBillableColor,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -295,7 +323,7 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
                   ),
                 ],
 
-                SizedBox(height: 20.h),
+                SizedBox(height: 80.h),
               ],
             ),
           ),

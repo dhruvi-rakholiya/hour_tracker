@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "886633614683",
+    "project_id": "hour-tracker-25ef5",
+    "storage_bucket": "hour-tracker-25ef5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886633614683:android:977a7b323205624fcede7e",
+        "android_client_info": {
+          "package_name": "com.example.hour_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCd8oiSmcivtKPNxq7iMEC-5u1GWEE69lo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

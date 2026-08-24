@@ -1,0 +1,8 @@
+<defaults xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt">
+    <entry>
+        <key>response
+        </key>
+        <value>{}
+        </value>
+    </entry>
+</defaults>

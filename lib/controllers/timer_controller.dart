@@ -60,8 +60,33 @@ class TimerController extends GetxController {
           isRunning = true;
           _recalculateElapsedTime();
           _startTicker();
+          updateTimerNotification();
         }
       }
+    }
+  }
+
+  void updateTimerNotification() {
+    bool enableNotifications = true;
+    if (Get.isRegistered<SettingsController>()) {
+      enableNotifications = Get.find<SettingsController>().settings.enableNotifications;
+    }
+
+    if (!enableNotifications || !isRunning) {
+      NotificationService.instance.cancelTimerNotification();
+      return;
+    }
+
+    if (isPaused) {
+      NotificationService.instance.showTimerNotification(
+        title: "Work Timer Paused",
+        body: "Session paused for break",
+      );
+    } else {
+      NotificationService.instance.showTimerNotification(
+        title: "Work Timer Running",
+        body: "Tracking session for ${selectedProject?.name ?? 'General Work'}",
+      );
     }
   }
 
@@ -112,6 +137,7 @@ class TimerController extends GetxController {
       SharedPrefService.sharedPreferences.setBool(keyIsPaused, false);
       SharedPrefService.sharedPreferences.setInt(keyBreakSeconds, breakSeconds);
       _startTicker();
+      updateTimerNotification();
       showToast("Timer Resumed");
     } else {
       // Fresh Start
@@ -135,10 +161,7 @@ class TimerController extends GetxController {
       SharedPrefService.sharedPreferences.setDouble(keyRate, currentHourlyRate);
 
       _startTicker();
-      NotificationService.instance.showTimerNotification(
-        title: "Work Timer Running",
-        body: "Tracking session for ${selectedProject?.name ?? 'General Work'}",
-      );
+      updateTimerNotification();
       showToast("Timer Started");
     }
     update();
@@ -152,10 +175,7 @@ class TimerController extends GetxController {
     _timer?.cancel();
 
     SharedPrefService.sharedPreferences.setBool(keyIsPaused, true);
-    NotificationService.instance.showTimerNotification(
-      title: "Work Timer Paused",
-      body: "Session paused for break",
-    );
+    updateTimerNotification();
     showToast("Timer Paused / On Break");
     update();
   }
@@ -179,11 +199,8 @@ class TimerController extends GetxController {
     final totalDurationMinutes = (elapsedSeconds + breakSeconds) ~/ 60;
     final netBreakMinutes = breakSeconds ~/ 60;
 
-    // Check settings for overtime threshold
     final settingsCtrl = Get.find<SettingsController>();
     final settings = settingsCtrl.settings;
-    final netWorkHours = (elapsedSeconds ~/ 60) / 60.0;
-    final isOvertime = netWorkHours > settings.overtimeThresholdDaily;
 
     final entry = TimeEntryModel(
       projectId: selectedProject?.id,
@@ -196,7 +213,7 @@ class TimerController extends GetxController {
       breakMinutes: netBreakMinutes,
       hourlyRate: currentHourlyRate,
       isBillable: isBillable,
-      isOvertime: isOvertime,
+      isOvertime: false,
       overtimeMultiplier: settings.overtimeMultiplier,
       notes: notes,
     );
@@ -269,10 +286,60 @@ class TimerController extends GetxController {
     update();
   }
 
+  bool get isOvertimeActive {
+    if (!isRunning) return false;
+    double dailyGoal = 8.0;
+    if (Get.isRegistered<SettingsController>()) {
+      dailyGoal = Get.find<SettingsController>().settings.dailyTargetHours;
+    }
+    final dailyGoalMinutes = (dailyGoal * 60).round();
+
+    int existingRegularMinutes = 0;
+    if (Get.isRegistered<TimeEntryController>()) {
+      final entryCtrl = Get.find<TimeEntryController>();
+      existingRegularMinutes = entryCtrl
+          .getEntriesForDay(DateTime.now())
+          .where((e) => !e.isOvertime)
+          .fold(0, (sum, e) => sum + e.netWorkMinutes);
+    }
+
+    final currentNetMinutes = elapsedSeconds ~/ 60;
+    return (existingRegularMinutes + currentNetMinutes) > dailyGoalMinutes;
+  }
+
   double get liveEarnings {
     if (!isBillable) return 0.0;
-    final hours = elapsedSeconds / 3600.0;
-    return hours * currentHourlyRate;
+
+    double dailyGoal = 8.0;
+    double multiplier = 1.5;
+    if (Get.isRegistered<SettingsController>()) {
+      final s = Get.find<SettingsController>().settings;
+      dailyGoal = s.dailyTargetHours;
+      multiplier = s.overtimeMultiplier;
+    }
+    final dailyGoalMinutes = (dailyGoal * 60).round();
+
+    int existingRegularMinutes = 0;
+    if (Get.isRegistered<TimeEntryController>()) {
+      final entryCtrl = Get.find<TimeEntryController>();
+      existingRegularMinutes = entryCtrl
+          .getEntriesForDay(DateTime.now())
+          .where((e) => !e.isOvertime)
+          .fold(0, (sum, e) => sum + e.netWorkMinutes);
+    }
+
+    final remainingRegularMinutes = (dailyGoalMinutes - existingRegularMinutes).clamp(0, dailyGoalMinutes);
+    final remainingRegularSeconds = remainingRegularMinutes * 60;
+
+    if (elapsedSeconds <= remainingRegularSeconds) {
+      final hours = elapsedSeconds / 3600.0;
+      return hours * currentHourlyRate;
+    } else {
+      final regularHours = remainingRegularSeconds / 3600.0;
+      final overtimeSeconds = elapsedSeconds - remainingRegularSeconds;
+      final overtimeHours = overtimeSeconds / 3600.0;
+      return (regularHours * currentHourlyRate) + (overtimeHours * currentHourlyRate * multiplier);
+    }
   }
 
   String get formattedElapsedTime {

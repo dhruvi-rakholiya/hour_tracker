@@ -395,6 +395,60 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
 
             SizedBox(height: 16.h),
 
+            // Overtime Indicator Info Card
+            Builder(
+              builder: (context) {
+                final startDT = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _startTime.hour, _startTime.minute);
+                final endDT = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _endTime.hour, _endTime.minute);
+                final durMins = endDT.difference(startDT).inMinutes;
+                final breakMins = int.tryParse(_breakCtrl.text.trim()) ?? 0;
+                final netMins = durMins - breakMins;
+
+                if (Get.isRegistered<TimeEntryController>() && netMins > 0) {
+                  final entryCtrl = Get.find<TimeEntryController>();
+                  final dailyGoal = entryCtrl.getDailyTargetHours();
+                  final multiplier = entryCtrl.getOvertimeMultiplier();
+                  final existingRegMins = entryCtrl
+                      .getEntriesForDay(_selectedDate)
+                      .where((e) => !e.isOvertime && e.id != widget.existingEntry?.id)
+                      .fold<int>(0, (sum, e) => sum + e.netWorkMinutes);
+
+                  final remainingRegMins = ((dailyGoal * 60) - existingRegMins).clamp(0, (dailyGoal * 60).toInt());
+
+                  if (netMins > remainingRegMins) {
+                    final overMins = netMins - remainingRegMins;
+                    final overHoursStr = (overMins / 60.0).toStringAsFixed(1);
+                    return Container(
+                      margin: EdgeInsets.only(bottom: 16.h),
+                      padding: EdgeInsets.all(12.r),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.bolt_rounded, color: Colors.amber[800], size: 20.sp),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: CustomAppText(
+                              text: remainingRegMins <= 0
+                                  ? "Entire shift will be logged as Overtime (${multiplier}x rate)."
+                                  : "Shift exceeds daily goal (${dailyGoal.toStringAsFixed(0)}h). $overHoursStr hrs will auto-split into a separate Overtime log (${multiplier}x rate).",
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.amber[900] ?? Colors.amber,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+
             // Financial & Break Details
             Container(
               padding: EdgeInsets.all(16.r),

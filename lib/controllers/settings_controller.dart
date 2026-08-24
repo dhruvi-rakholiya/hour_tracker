@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:hour_tracker/controllers/timer_controller.dart';
 import 'package:hour_tracker/models/user_settings_model.dart';
 import 'package:hour_tracker/services/database_service.dart';
 import 'package:hour_tracker/utils/app_show_toast.dart';
@@ -32,6 +33,11 @@ class SettingsController extends GetxController {
       await DatabaseService.instance.updateUserSettings(newSettings);
       settings = newSettings;
       update();
+
+      if (Get.isRegistered<TimerController>()) {
+        Get.find<TimerController>().updateTimerNotification();
+      }
+
       showToast("Settings saved successfully");
       return true;
     } catch (e) {

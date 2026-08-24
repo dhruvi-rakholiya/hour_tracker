@@ -271,13 +271,38 @@ class _TimerTabState extends State<TimerTab> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CustomAppText(
-                          text: timerCtrl.isPaused ? "BREAK" : (timerCtrl.isRunning ? "WORKING" : "READY"),
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                          color: timerCtrl.isPaused ? nonBillableColor : (timerCtrl.isRunning ? primaryColor : textMuted),
-                        ),
+                        if (timerCtrl.isOvertimeActive && timerCtrl.isRunning && !timerCtrl.isPaused) ...[
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(12.r),
+                              border: Border.all(color: Colors.amber, width: 1),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.bolt_rounded, size: 12.sp, color: Colors.amber[800]),
+                                SizedBox(width: 2.w),
+                                CustomAppText(
+                                  text: "OVERTIME (1.5x)",
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.amber[900] ?? Colors.amber,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                        ] else ...[
+                          CustomAppText(
+                            text: timerCtrl.isPaused ? "BREAK" : (timerCtrl.isRunning ? "WORKING" : "READY"),
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                            color: timerCtrl.isPaused ? nonBillableColor : (timerCtrl.isRunning ? primaryColor : textMuted),
+                          ),
+                        ],
                         SizedBox(height: 8.h),
                         CustomAppText(
                           text: timerCtrl.formattedElapsedTime,
@@ -290,7 +315,7 @@ class _TimerTabState extends State<TimerTab> {
                           text: "Earnings: \$${timerCtrl.liveEarnings.toStringAsFixed(2)}",
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
-                          color: billableColor,
+                          color: timerCtrl.isOvertimeActive ? Colors.amber[800] : billableColor,
                         ),
                         if (timerCtrl.breakSeconds > 0) ...[
                           SizedBox(height: 4.h),
@@ -456,7 +481,7 @@ class _TimerTabState extends State<TimerTab> {
                 ),
               ),
 
-              SizedBox(height: 20.h),
+              SizedBox(height: 80.h),
             ],
           );
         },

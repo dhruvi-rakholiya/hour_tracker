@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:hour_tracker/controllers/report_controller.dart';
+import 'package:hour_tracker/controllers/settings_controller.dart';
 import 'package:hour_tracker/models/time_entry_model.dart';
 import 'package:hour_tracker/services/database_service.dart';
 import 'package:hour_tracker/utils/app_show_toast.dart';
@@ -53,6 +54,20 @@ class TimeEntryController extends GetxController {
     }).toList();
   }
 
+  double getDailyTargetHours() {
+    if (Get.isRegistered<SettingsController>()) {
+      return Get.find<SettingsController>().settings.dailyTargetHours;
+    }
+    return 8.0;
+  }
+
+  double getOvertimeMultiplier() {
+    if (Get.isRegistered<SettingsController>()) {
+      return Get.find<SettingsController>().settings.overtimeMultiplier;
+    }
+    return 1.5;
+  }
+
   // --- STATS COMPUTATIONS ---
   double get todayTotalHours {
     final today = DateTime.now();
@@ -100,7 +115,62 @@ class TimeEntryController extends GetxController {
 
   Future<bool> addTimeEntry(TimeEntryModel entry) async {
     try {
-      await DatabaseService.instance.insertTimeEntry(entry);
+      final dailyTargetHours = getDailyTargetHours();
+      final overtimeMultiplier = getOvertimeMultiplier();
+      final dailyGoalMinutes = (dailyTargetHours * 60).round();
+
+      // Existing regular net minutes worked on entry date
+      final dayEntries = getEntriesForDay(entry.startTime);
+      final existingRegularMinutes = dayEntries
+          .where((e) => !e.isOvertime)
+          .fold<int>(0, (sum, e) => sum + e.netWorkMinutes);
+
+      final remainingRegularMinutes = dailyGoalMinutes - existingRegularMinutes;
+      final newNetMinutes = entry.netWorkMinutes;
+
+      if (remainingRegularMinutes <= 0) {
+        // Entire new entry is overtime
+        final overtimeEntry = entry.copyWith(
+          isOvertime: true,
+          overtimeMultiplier: overtimeMultiplier,
+        );
+        await DatabaseService.instance.insertTimeEntry(overtimeEntry);
+      } else if (newNetMinutes <= remainingRegularMinutes) {
+        // Entire entry fits in regular hours
+        final regularEntry = entry.copyWith(
+          isOvertime: false,
+          overtimeMultiplier: overtimeMultiplier,
+        );
+        await DatabaseService.instance.insertTimeEntry(regularEntry);
+      } else {
+        // Shift crosses daily goal threshold! Split into 2 separate log events.
+        final regularNetMins = remainingRegularMinutes;
+        final overtimeNetMins = newNetMinutes - regularNetMins;
+
+        final regularDurationMins = regularNetMins + entry.breakMinutes;
+        final regularEndTime = entry.startTime.add(Duration(minutes: regularDurationMins));
+
+        final regularEntry = entry.copyWith(
+          endTime: regularEndTime,
+          durationMinutes: regularDurationMins,
+          breakMinutes: entry.breakMinutes,
+          isOvertime: false,
+          overtimeMultiplier: overtimeMultiplier,
+        );
+
+        final overtimeEntry = entry.copyWith(
+          startTime: regularEndTime,
+          endTime: entry.endTime,
+          durationMinutes: overtimeNetMins,
+          breakMinutes: 0,
+          isOvertime: true,
+          overtimeMultiplier: overtimeMultiplier,
+        );
+
+        await DatabaseService.instance.insertTimeEntry(regularEntry);
+        await DatabaseService.instance.insertTimeEntry(overtimeEntry);
+      }
+
       await loadTimeEntries();
       showToast("Time log saved successfully");
       return true;
@@ -112,7 +182,68 @@ class TimeEntryController extends GetxController {
 
   Future<bool> updateTimeEntry(TimeEntryModel entry) async {
     try {
-      await DatabaseService.instance.updateTimeEntry(entry);
+      final dailyTargetHours = getDailyTargetHours();
+      final overtimeMultiplier = getOvertimeMultiplier();
+      final dailyGoalMinutes = (dailyTargetHours * 60).round();
+
+      // Existing regular minutes on this date, excluding this entry
+      final dayEntries = getEntriesForDay(entry.startTime).where((e) => e.id != entry.id).toList();
+      final existingRegularMinutes = dayEntries
+          .where((e) => !e.isOvertime)
+          .fold<int>(0, (sum, e) => sum + e.netWorkMinutes);
+
+      final remainingRegularMinutes = dailyGoalMinutes - existingRegularMinutes;
+      final newNetMinutes = entry.netWorkMinutes;
+
+      if (remainingRegularMinutes <= 0) {
+        final overtimeEntry = entry.copyWith(
+          isOvertime: true,
+          overtimeMultiplier: overtimeMultiplier,
+        );
+        await DatabaseService.instance.updateTimeEntry(overtimeEntry);
+      } else if (newNetMinutes <= remainingRegularMinutes) {
+        final regularEntry = entry.copyWith(
+          isOvertime: false,
+          overtimeMultiplier: overtimeMultiplier,
+        );
+        await DatabaseService.instance.updateTimeEntry(regularEntry);
+      } else {
+        // Split
+        final regularNetMins = remainingRegularMinutes;
+        final overtimeNetMins = newNetMinutes - regularNetMins;
+
+        final regularDurationMins = regularNetMins + entry.breakMinutes;
+        final regularEndTime = entry.startTime.add(Duration(minutes: regularDurationMins));
+
+        final regularEntry = entry.copyWith(
+          endTime: regularEndTime,
+          durationMinutes: regularDurationMins,
+          breakMinutes: entry.breakMinutes,
+          isOvertime: false,
+          overtimeMultiplier: overtimeMultiplier,
+        );
+
+        final overtimeEntry = TimeEntryModel(
+          projectId: entry.projectId,
+          projectName: entry.projectName,
+          projectColor: entry.projectColor,
+          taskId: entry.taskId,
+          taskName: entry.taskName,
+          startTime: regularEndTime,
+          endTime: entry.endTime,
+          durationMinutes: overtimeNetMins,
+          breakMinutes: 0,
+          hourlyRate: entry.hourlyRate,
+          isBillable: entry.isBillable,
+          isOvertime: true,
+          overtimeMultiplier: overtimeMultiplier,
+          notes: entry.notes,
+        );
+
+        await DatabaseService.instance.updateTimeEntry(regularEntry);
+        await DatabaseService.instance.insertTimeEntry(overtimeEntry);
+      }
+
       await loadTimeEntries();
       showToast("Time log updated");
       return true;
@@ -132,3 +263,4 @@ class TimeEntryController extends GetxController {
     }
   }
 }
+
