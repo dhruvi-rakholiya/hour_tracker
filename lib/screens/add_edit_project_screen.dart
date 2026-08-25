@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/controllers/project_controller.dart';
+import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
 import 'package:hour_tracker/models/project_model.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
@@ -132,7 +133,14 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary, size: 20.sp),
-          onPressed: () => Get.back(),
+          onPressed: () {
+            AdsVariable.onShowAds(
+              context,
+              onComplete: () {
+                Get.back();
+              },
+            );
+          },
         ),
         title: CustomAppText(
           text: isEditing ? AppStrings.editProject : AppStrings.addProject,

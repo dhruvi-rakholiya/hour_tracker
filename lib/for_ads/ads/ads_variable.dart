@@ -22,6 +22,10 @@ class AdsVariable {
     bigNativeSurveyAdIOS1 = "11";
     bigNativeSurveyAdIOS2 = "11";
     fullNativeIntroAdIOS = "11";
+    bannerHomeIOS = "11";
+    bannerLogsIOS = "11";
+    bannerReportsIOS = "11";
+    bannerProjectsIOS = "11";
   }
 
   static Future<bool> isInternetConnected() {
@@ -56,6 +60,12 @@ class AdsVariable {
   static String bigNativeSurveyAdIOS1 = "11";
   static String bigNativeSurveyAdIOS2 = "11";
   static String fullNativeIntroAdIOS = "11";
+
+  /// Banner Ads Remote Config IDs
+  static String bannerHomeIOS = "11";
+  static String bannerLogsIOS = "11";
+  static String bannerReportsIOS = "11";
+  static String bannerProjectsIOS = "11";
 
   static Future<void> onShowAds(BuildContext context, {required Function onComplete, bool isShowLoadingScreen = true}) async {
     print('isShowLoadingScreen -->$isShowLoadingScreen');

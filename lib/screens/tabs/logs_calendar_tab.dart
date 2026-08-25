@@ -323,7 +323,7 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
                   ),
                 ],
 
-                SizedBox(height: 80.h),
+                SizedBox(height: 130.h),
               ],
             ),
           ),

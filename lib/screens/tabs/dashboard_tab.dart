@@ -10,6 +10,7 @@ import 'package:hour_tracker/controllers/time_entry_controller.dart';
 import 'package:hour_tracker/controllers/timer_controller.dart';
 import 'package:hour_tracker/screens/add_edit_entry_screen.dart';
 import 'package:hour_tracker/screens/add_edit_project_screen.dart';
+import 'package:hour_tracker/screens/premium_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_formatters.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
@@ -26,7 +27,7 @@ class DashboardTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Row: App  Title & Add Log Button
+          // Header Row: App Title, PRO Button & Add Log Button
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -49,30 +50,65 @@ class DashboardTab extends StatelessWidget {
                   ],
                 ),
               ),
-              CustomOpacityWidget(
-                onTap: () => Get.to(() => const AddEditEntryScreen()),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-                  decoration: BoxDecoration(
-                    gradient: primaryGradient,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 8.r, offset: const Offset(0, 4)),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.add_rounded, color: white, size: 18.sp),
-                      SizedBox(width: 4.w),
-                      CustomAppText(
-                        text: "Add Log",
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.bold,
-                        color: white,
+              Row(
+                children: [
+                  // Highlighted Yellow/Orange PRO Button
+                  CustomOpacityWidget(
+                    onTap: () => Get.to(() => const PremiumScreen()),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 9.h),
+                      decoration: BoxDecoration(
+                        gradient: goldGradient,
+                        borderRadius: BorderRadius.circular(12.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFB8500).withValues(alpha: 0.4),
+                            blurRadius: 8.r,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                    ],
+                      child: Row(
+                        children: [
+                          Icon(Icons.workspace_premium_rounded, color: white, size: 16.sp),
+                          SizedBox(width: 4.w),
+                          CustomAppText(
+                            text: "PRO",
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                            color: white,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  SizedBox(width: 8.w),
+                  CustomOpacityWidget(
+                    onTap: () => Get.to(() => const AddEditEntryScreen()),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 9.h),
+                      decoration: BoxDecoration(
+                        gradient: primaryGradient,
+                        borderRadius: BorderRadius.circular(12.r),
+                        boxShadow: [
+                          BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 8.r, offset: const Offset(0, 4)),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.add_rounded, color: white, size: 18.sp),
+                          SizedBox(width: 4.w),
+                          CustomAppText(
+                            text: "Add Log",
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.bold,
+                            color: white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -655,7 +691,7 @@ class DashboardTab extends StatelessWidget {
               );
             },
           ),
-          SizedBox(height: 80.h),
+          SizedBox(height: 130.h),
         ],
       ),
     );

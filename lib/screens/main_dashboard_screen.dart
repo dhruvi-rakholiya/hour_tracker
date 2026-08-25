@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/controllers/timer_controller.dart';
+import 'package:hour_tracker/for_ads/widgets/banner_ad_widget.dart';
 import 'package:hour_tracker/screens/tabs/dashboard_tab.dart';
 import 'package:hour_tracker/screens/tabs/logs_calendar_tab.dart';
 import 'package:hour_tracker/screens/tabs/projects_settings_tab.dart';
@@ -45,7 +46,13 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
           index: _currentIndex,
           children: tabs,
         ).paddingOnly(top: 20.h),
-        bottomNavigationBar: _buildFloatingBottomBar(),
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TabBannerAdWidget(currentIndex: _currentIndex),
+            _buildFloatingBottomBar(),
+          ],
+        ),
       ),
     );
   }

@@ -26,21 +26,25 @@ class AdsSplashUtils {
     prefs = await SharedPreferences.getInstance();
 
     /// IOS
-    AdsVariable.appOpenAdsIOS = prefs.getString("fs_appOpenAd") ?? "11";
-    AdsVariable.interSplashIOS = prefs.getString("fs_splashInterstitialAd") ?? "11";
-    AdsVariable.bigNativeSurveyAdIOS1 = prefs.getString("fs_surveyBigNative1") ?? "11";
-    AdsVariable.bigNativeSurveyAdIOS2 = prefs.getString("fs_surveyBigNative2") ?? "11";
-    AdsVariable.fullNativeIntroAdIOS = prefs.getString("fs_introFullNative") ?? "11";
-    // AdsVariable.smallThirdIntroNativeIntroAdIOS =
-    //     prefs.getString("fs_smallThirdIntroNative") ?? "11";
-    AdsVariable.interPreLoadIOS = prefs.getString("fs_preInterstitialAd") ?? "11";
+    AdsVariable.appOpenAdsIOS = prefs.getString("appOpenAd") ?? "11";
+    AdsVariable.interSplashIOS = prefs.getString("splashInterstitialAd") ?? "11";
+    // AdsVariable.bigNativeSurveyAdIOS1 = prefs.getString("surveyBigNative1") ?? "11";
+    // AdsVariable.bigNativeSurveyAdIOS2 = prefs.getString("surveyBigNative2") ?? "11";
+    // AdsVariable.fullNativeIntroAdIOS = prefs.getString("introFullNative") ?? "11";
+    // // AdsVariable.smallThirdIntroNativeIntroAdIOS =
+    // //     prefs.getString("smallThirdIntroNative") ?? "11";
+    AdsVariable.interPreLoadIOS = prefs.getString("preInterstitialAd") ?? "11";
+    AdsVariable.bannerHomeIOS = prefs.getString("bannerHome") ?? "11";
+    AdsVariable.bannerLogsIOS = prefs.getString("bannerLogs") ?? "11";
+    AdsVariable.bannerReportsIOS = prefs.getString("bannerReports") ?? "11";
+    AdsVariable.bannerProjectsIOS = prefs.getString("bannerProjects") ?? "11";
 
-    AdsVariable.nativeBGColor = prefs.getString("nativeBGColor") ?? "#A7DAFB";
-    AdsVariable.headerTextColor = prefs.getString("headlineTxtColor") ?? "#000000";
-    AdsVariable.bodyTextColor = prefs.getString("bodyTxtColor") ?? "#000000";
-    AdsVariable.btnTextColor = prefs.getString("buttonTxtColor") ?? "#FFFFFF";
-    AdsVariable.btnBgColorG1 = prefs.getString("buttonBgColorG1") ?? "#0091FF";
-    AdsVariable.btnBgColorG2 = prefs.getString("buttonBgColorG2") ?? "#0091FF";
+    // AdsVariable.nativeBGColor = prefs.getString("nativeBGColor") ?? "#A7DAFB";
+    // AdsVariable.headerTextColor = prefs.getString("headlineTxtColor") ?? "#000000";
+    // AdsVariable.bodyTextColor = prefs.getString("bodyTxtColor") ?? "#000000";
+    // AdsVariable.btnTextColor = prefs.getString("buttonTxtColor") ?? "#FFFFFF";
+    // AdsVariable.btnBgColorG1 = prefs.getString("buttonBgColorG1") ?? "#0091FF";
+    // AdsVariable.btnBgColorG2 = prefs.getString("buttonBgColorG2") ?? "#0091FF";
 
     AdsVariable.openAdInSplash = prefs.getBool("showOpenAdInSplash") ?? false;
     AdsVariable.click = prefs.getString("click") ?? "2";
@@ -76,38 +80,56 @@ class AdsSplashUtils {
         AdsVariable.appOpenAdsIOS = mapValues1["appOpenAd"].toString();
         AdsVariable.interSplashIOS = mapValues1["splashInterstitialAd"].toString();
 
-        AdsVariable.bigNativeSurveyAdIOS1 = mapValues1["surveyBigNative1"].toString();
-        AdsVariable.bigNativeSurveyAdIOS2 = mapValues1["surveyBigNative2"].toString();
-        AdsVariable.fullNativeIntroAdIOS = mapValues1["introFullNative"].toString();
+        // AdsVariable.bigNativeSurveyAdIOS1 = mapValues1["surveyBigNative1"].toString();
+        // AdsVariable.bigNativeSurveyAdIOS2 = mapValues1["surveyBigNative2"].toString();
+        // AdsVariable.fullNativeIntroAdIOS = mapValues1["introFullNative"].toString();
         AdsVariable.interPreLoadIOS = mapValues1["preInterstitialAd"].toString();
 
-        AdsVariable.nativeBGColor = mapValues1['nativeBGColor'] ?? 'A7DAFB';
-        AdsVariable.headerTextColor = mapValues1["headlineTxtColor"].toString();
-        AdsVariable.bodyTextColor = mapValues1["bodyTxtColor"].toString();
-        AdsVariable.btnBgColorG1 = mapValues1["buttonBgColorG1"].toString();
-        AdsVariable.btnBgColorG2 = mapValues1["buttonBgColorG2"].toString();
-        AdsVariable.btnTextColor = mapValues1["buttonTxtColor"].toString();
+        AdsVariable.bannerHomeIOS = mapValues1["bannerHome"]?.toString() ??
+            mapValues1["bannerAdHome"]?.toString() ??
+            mapValues1["bannerDashboard"]?.toString() ??
+            "11";
+        AdsVariable.bannerLogsIOS = mapValues1["bannerLogs"]?.toString() ??
+            mapValues1["bannerAdLogs"]?.toString() ??
+            "11";
+        AdsVariable.bannerReportsIOS = mapValues1["bannerReports"]?.toString() ??
+            mapValues1["bannerAdReports"]?.toString() ??
+            "11";
+        AdsVariable.bannerProjectsIOS = mapValues1["bannerProjects"]?.toString() ??
+            mapValues1["bannerAdProjects"]?.toString() ??
+            "11";
+
+        // AdsVariable.nativeBGColor = mapValues1['nativeBGColor'] ?? 'A7DAFB';
+        // AdsVariable.headerTextColor = mapValues1["headlineTxtColor"].toString();
+        // AdsVariable.bodyTextColor = mapValues1["bodyTxtColor"].toString();
+        // AdsVariable.btnBgColorG1 = mapValues1["buttonBgColorG1"].toString();
+        // AdsVariable.btnBgColorG2 = mapValues1["buttonBgColorG2"].toString();
+        // AdsVariable.btnTextColor = mapValues1["buttonTxtColor"].toString();
         AdsVariable.click = mapValues1["click"];
         AdsVariable.openAdInSplash = mapValues1["showOpenAdInSplash"];
 
         /// Store firebase remote config data into shared preferences :
 
-        prefs.setString("nativeBGColor", mapValues1["nativeBGColor"].toString());
-        prefs.setString("buttonBgColorG1", mapValues1["buttonBgColorG1"].toString());
-        prefs.setString("buttonBgColorG2", mapValues1["buttonBgColorG2"].toString());
-        prefs.setString("buttonTxtColor", mapValues1["buttonTxtColor"].toString());
-        prefs.setString("headlineTxtColor", mapValues1["headlineTxtColor"].toString());
-        prefs.setString("bodyTxtColor", mapValues1["bodyTxtColor"].toString());
+        // prefs.setString("nativeBGColor", mapValues1["nativeBGColor"].toString());
+        // prefs.setString("buttonBgColorG1", mapValues1["buttonBgColorG1"].toString());
+        // prefs.setString("buttonBgColorG2", mapValues1["buttonBgColorG2"].toString());
+        // prefs.setString("buttonTxtColor", mapValues1["buttonTxtColor"].toString());
+        // prefs.setString("headlineTxtColor", mapValues1["headlineTxtColor"].toString());
+        // prefs.setString("bodyTxtColor", mapValues1["bodyTxtColor"].toString());
 
         prefs.setString("fb_appid", mapValues1["fb_appid"].toString());
         prefs.setString("fb_token", mapValues1["fb_token"].toString());
 
-        prefs.setString("fs_appOpenAd", mapValues1["fs_appOpenAd"] ?? "11");
-        prefs.setString("fs_splashInterstitialAd", mapValues1["fs_splashInterstitialAd"] ?? "11");
-        prefs.setString("fs_preInterstitialAd", mapValues1["fs_preInterstitialAd"] ?? "11");
-        prefs.setString("fs_surveyBigNative1", mapValues1["fs_surveyBigNative1"] ?? "11");
-        prefs.setString("fs_surveyBigNative2", mapValues1["fs_surveyBigNative2"] ?? "11");
-        prefs.setString("fs_introFullNative", mapValues1["fs_introFullNative"] ?? "11");
+        prefs.setString("appOpenAd", mapValues1["appOpenAd"] ?? "11");
+        prefs.setString("splashInterstitialAd", mapValues1["splashInterstitialAd"] ?? "11");
+        prefs.setString("preInterstitialAd", mapValues1["preInterstitialAd"] ?? "11");
+        // prefs.setString("surveyBigNative1", mapValues1["surveyBigNative1"] ?? "11");
+        // prefs.setString("surveyBigNative2", mapValues1["surveyBigNative2"] ?? "11");
+        // prefs.setString("introFullNative", mapValues1["introFullNative"] ?? "11");
+        prefs.setString("bannerHome", AdsVariable.bannerHomeIOS);
+        prefs.setString("bannerLogs", AdsVariable.bannerLogsIOS);
+        prefs.setString("bannerReports", AdsVariable.bannerReportsIOS);
+        prefs.setString("bannerProjects", AdsVariable.bannerProjectsIOS);
         // prefs.setString(
         //   "fs_smallThirdIntroNative",
         //   mapValues1["fs_smallThirdIntroNative"] ?? "11",
@@ -141,9 +163,10 @@ class AdsSplashUtils {
 
         await Check.init();
 
-        loadPreLoadIntroFullNativeAds();
-        loadPreLoadSurveyNativeAds1();
-        loadPreLoadSurveyNativeAds2();
+        // Native ads preloading disabled as big/full native ads are no longer used in the app
+        // loadPreLoadIntroFullNativeAds();
+        // loadPreLoadSurveyNativeAds1();
+        // loadPreLoadSurveyNativeAds2();
 
         Future.delayed(const Duration(seconds: 0), () async {
           if (AdsVariable.openAdInSplash!) {
@@ -169,7 +192,7 @@ class AdsSplashUtils {
 
   late AppLifecycleReactor appLifecycleReactor;
 
-  loadAppOpenAd() async {
+  Future<void> loadAppOpenAd() async {
     showLog("Load from BG...");
     AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd(AdsVariable.appOpenAdsIOS);
     await appOpenAdManager.loadAd(AdsVariable.appOpenAdsIOS);
@@ -178,7 +201,7 @@ class AdsSplashUtils {
     AppLifecycleReactor(appOpenAdManager: appOpenAdManager).listenToAppStateChanges();
   }
 
-  fetchPurchase() async {
+  Future<void> fetchPurchase() async {
     try {
       final customerInfo = await Purchases.getCustomerInfo();
       if (customerInfo.entitlements.all[entitlementKey] != null &&
@@ -198,7 +221,7 @@ class AdsSplashUtils {
   }
 }
 
-premiumInit() {
+void premiumInit() {
   if (Platform.isIOS || Platform.isMacOS) {
     StoreConfig(store: Store.appStore, apiKey: appleApiKey);
   } else if (Platform.isAndroid) {
@@ -207,7 +230,7 @@ premiumInit() {
   }
 }
 
-setupFbAdsId() async {
+Future<void> setupFbAdsId() async {
   showLog("Call 1");
   const platformMethodChannel = MethodChannel('nativeChannel');
   showLog("Call 2");

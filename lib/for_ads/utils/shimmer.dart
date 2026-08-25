@@ -10,12 +10,12 @@ class ShimmerSmallNative extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[500]!,
+      baseColor: Colors.white,
       highlightColor: Colors.grey[300]!,
       child: Container(
         height: Get.height / 5,
         decoration: BoxDecoration(
-            color: Colors.white38, borderRadius: BorderRadius.circular(15)),
+            color: Colors.white38, borderRadius: BorderRadius.circular(0)),
         width: Get.width,
         child: Column(
           children: [
@@ -265,6 +265,32 @@ class ShimmerBigNative extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ShimmerBannerAd extends StatelessWidget {
+  const ShimmerBannerAd({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 6.h),
+      width: 350.w,
+      height: 50.h,
+      alignment: Alignment.center,
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[500]!,
+        child: Container(
+          width: 320.w,
+          height: 50.h,
+          decoration: BoxDecoration(
+            color: Colors.grey[500],
+            borderRadius: BorderRadius.circular(0.r),
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
 import 'package:intl/intl.dart';
 import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
@@ -53,7 +54,10 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
       _breakCtrl.text = _breakMinutes.toString();
     } else {
       _selectedDate = DateTime.now();
-      _startTime = TimeOfDay(hour: DateTime.now().hour - 1, minute: DateTime.now().minute);
+      _startTime = TimeOfDay(
+        hour: DateTime.now().hour - 1,
+        minute: DateTime.now().minute,
+      );
       _endTime = TimeOfDay.now();
       _breakMinutes = 0;
       _hourlyRate = 35.0;
@@ -66,7 +70,9 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
       final projCtrl = Get.find<ProjectController>();
       if (projCtrl.projects.isNotEmpty) {
         if (entry != null && entry.projectId != null) {
-          _selectedProject = projCtrl.projects.firstWhereOrNull((p) => p.id == entry.projectId);
+          _selectedProject = projCtrl.projects.firstWhereOrNull(
+            (p) => p.id == entry.projectId,
+          );
         }
         _selectedProject ??= projCtrl.projects.first;
         if (entry == null) {
@@ -132,7 +138,8 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
       _endTime.minute,
     );
 
-    if (endDateTime.isBefore(startDateTime) || endDateTime.isAtSameMomentAs(startDateTime)) {
+    if (endDateTime.isBefore(startDateTime) ||
+        endDateTime.isAtSameMomentAs(startDateTime)) {
       showToast("End time must be after start time");
       return;
     }
@@ -184,8 +191,19 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
         backgroundColor: cardBgColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary, size: 20.sp),
-          onPressed: () => Get.back(),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: textPrimary,
+            size: 20.sp,
+          ),
+          onPressed: () {
+            AdsVariable.onShowAds(
+              context,
+              onComplete: () {
+                Get.back();
+              },
+            );
+          },
         ),
         title: CustomAppText(
           text: isEditing ? AppStrings.editTimeEntry : AppStrings.addTimeEntry,
@@ -209,15 +227,22 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                     decoration: BoxDecoration(
                       color: cardBgColor,
                       borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: primaryColor.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 24.sp),
+                        Icon(
+                          Icons.warning_amber_rounded,
+                          color: Colors.orange,
+                          size: 24.sp,
+                        ),
                         SizedBox(width: 10.w),
                         Expanded(
                           child: CustomAppText(
-                            text: "No projects found. Please create a project first.",
+                            text:
+                                "No projects found. Please create a project first.",
                             fontSize: 13.sp,
                             color: textSecondary,
                           ),
@@ -233,7 +258,11 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                     color: cardBgColor,
                     borderRadius: BorderRadius.circular(16.r),
                     boxShadow: [
-                      BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
+                      BoxShadow(
+                        color: shadowColor,
+                        blurRadius: 10.r,
+                        offset: const Offset(0, 4),
+                      ),
                     ],
                   ),
                   child: Column(
@@ -250,7 +279,10 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                         child: DropdownButton<ProjectModel>(
                           isExpanded: true,
                           value: _selectedProject,
-                          hint: const CustomAppText(text: AppStrings.noProjectSelected, color: textMuted),
+                          hint: const CustomAppText(
+                            text: AppStrings.noProjectSelected,
+                            color: textMuted,
+                          ),
                           items: projCtrl.projects.map((p) {
                             return DropdownMenuItem<ProjectModel>(
                               value: p,
@@ -279,7 +311,9 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                             if (p != null) {
                               setState(() {
                                 _selectedProject = p;
-                                _rateCtrl.text = p.hourlyRate.toStringAsFixed(0);
+                                _rateCtrl.text = p.hourlyRate.toStringAsFixed(
+                                  0,
+                                );
                               });
                             }
                           },
@@ -291,7 +325,6 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
               },
             ),
 
-
             SizedBox(height: 16.h),
 
             // Date & Time Picker Card
@@ -301,7 +334,11 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                 color: cardBgColor,
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
-                  BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
+                  BoxShadow(
+                    color: shadowColor,
+                    blurRadius: 10.r,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
               child: Column(
@@ -314,13 +351,23 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.calendar_today_rounded, color: primaryColor, size: 20.sp),
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              color: primaryColor,
+                              size: 20.sp,
+                            ),
                             SizedBox(width: 10.w),
-                            CustomAppText(text: AppStrings.date, fontSize: 14.sp, color: textSecondary),
+                            CustomAppText(
+                              text: AppStrings.date,
+                              fontSize: 14.sp,
+                              color: textSecondary,
+                            ),
                           ],
                         ),
                         CustomAppText(
-                          text: DateFormat('EEE, MMM dd, yyyy').format(_selectedDate),
+                          text: DateFormat(
+                            'EEE, MMM dd, yyyy',
+                          ).format(_selectedDate),
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
                           color: textPrimary,
@@ -346,7 +393,11 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CustomAppText(text: AppStrings.startTime, fontSize: 12.sp, color: textSecondary),
+                                CustomAppText(
+                                  text: AppStrings.startTime,
+                                  fontSize: 12.sp,
+                                  color: textSecondary,
+                                ),
                                 SizedBox(height: 4.h),
                                 CustomAppText(
                                   text: _startTime.format(context),
@@ -374,7 +425,11 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CustomAppText(text: AppStrings.endTime, fontSize: 12.sp, color: textSecondary),
+                                CustomAppText(
+                                  text: AppStrings.endTime,
+                                  fontSize: 12.sp,
+                                  color: textSecondary,
+                                ),
                                 SizedBox(height: 4.h),
                                 CustomAppText(
                                   text: _endTime.format(context),
@@ -398,8 +453,20 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
             // Overtime Indicator Info Card
             Builder(
               builder: (context) {
-                final startDT = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _startTime.hour, _startTime.minute);
-                final endDT = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _endTime.hour, _endTime.minute);
+                final startDT = DateTime(
+                  _selectedDate.year,
+                  _selectedDate.month,
+                  _selectedDate.day,
+                  _startTime.hour,
+                  _startTime.minute,
+                );
+                final endDT = DateTime(
+                  _selectedDate.year,
+                  _selectedDate.month,
+                  _selectedDate.day,
+                  _endTime.hour,
+                  _endTime.minute,
+                );
                 final durMins = endDT.difference(startDT).inMinutes;
                 final breakMins = int.tryParse(_breakCtrl.text.trim()) ?? 0;
                 final netMins = durMins - breakMins;
@@ -410,10 +477,14 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                   final multiplier = entryCtrl.getOvertimeMultiplier();
                   final existingRegMins = entryCtrl
                       .getEntriesForDay(_selectedDate)
-                      .where((e) => !e.isOvertime && e.id != widget.existingEntry?.id)
+                      .where(
+                        (e) =>
+                            !e.isOvertime && e.id != widget.existingEntry?.id,
+                      )
                       .fold<int>(0, (sum, e) => sum + e.netWorkMinutes);
 
-                  final remainingRegMins = ((dailyGoal * 60) - existingRegMins).clamp(0, (dailyGoal * 60).toInt());
+                  final remainingRegMins = ((dailyGoal * 60) - existingRegMins)
+                      .clamp(0, (dailyGoal * 60).toInt());
 
                   if (netMins > remainingRegMins) {
                     final overMins = netMins - remainingRegMins;
@@ -424,11 +495,17 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                       decoration: BoxDecoration(
                         color: Colors.amber.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: Colors.amber.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.bolt_rounded, color: Colors.amber[800], size: 20.sp),
+                          Icon(
+                            Icons.bolt_rounded,
+                            color: Colors.amber[800],
+                            size: 20.sp,
+                          ),
                           SizedBox(width: 8.w),
                           Expanded(
                             child: CustomAppText(
@@ -456,7 +533,11 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                 color: cardBgColor,
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
-                  BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
+                  BoxShadow(
+                    color: shadowColor,
+                    blurRadius: 10.r,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
               child: Column(
@@ -465,18 +546,31 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CustomAppText(text: AppStrings.hourlyRate, fontSize: 14.sp, color: textSecondary),
+                      CustomAppText(
+                        text: AppStrings.hourlyRate,
+                        fontSize: 14.sp,
+                        color: textSecondary,
+                      ),
                       SizedBox(
                         width: 100.w,
                         child: TextField(
                           controller: _rateCtrl,
                           keyboardType: TextInputType.number,
                           textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold, color: textPrimary),
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimary,
+                          ),
                           decoration: InputDecoration(
                             isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 8.w,
+                              vertical: 8.h,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
                           ),
                         ),
                       ),
@@ -489,18 +583,31 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CustomAppText(text: AppStrings.breakTime, fontSize: 14.sp, color: textSecondary),
+                      CustomAppText(
+                        text: AppStrings.breakTime,
+                        fontSize: 14.sp,
+                        color: textSecondary,
+                      ),
                       SizedBox(
                         width: 100.w,
                         child: TextField(
                           controller: _breakCtrl,
                           keyboardType: TextInputType.number,
                           textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold, color: textPrimary),
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimary,
+                          ),
                           decoration: InputDecoration(
                             isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 8.w,
+                              vertical: 8.h,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
                           ),
                         ),
                       ),
@@ -516,8 +623,12 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                       Row(
                         children: [
                           Icon(
-                            _isBillable ? Icons.monetization_on_rounded : Icons.money_off_rounded,
-                            color: _isBillable ? billableColor : nonBillableColor,
+                            _isBillable
+                                ? Icons.monetization_on_rounded
+                                : Icons.money_off_rounded,
+                            color: _isBillable
+                                ? billableColor
+                                : nonBillableColor,
                             size: 22.sp,
                           ),
                           SizedBox(width: 8.w),
@@ -534,7 +645,6 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                         activeTrackColor: billableColor,
                         onChanged: (val) => setState(() => _isBillable = val),
                       ),
-
                     ],
                   ),
                 ],
@@ -550,13 +660,21 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                 color: cardBgColor,
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
-                  BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
+                  BoxShadow(
+                    color: shadowColor,
+                    blurRadius: 10.r,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomAppText(text: AppStrings.notes, fontSize: 13.sp, color: textSecondary),
+                  CustomAppText(
+                    text: AppStrings.notes,
+                    fontSize: 13.sp,
+                    color: textSecondary,
+                  ),
                   SizedBox(height: 8.h),
                   TextField(
                     controller: _notesCtrl,
@@ -565,7 +683,9 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                     decoration: InputDecoration(
                       hintText: "What did you work on?",
                       hintStyle: TextStyle(fontSize: 14.sp, color: textMuted),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
                     ),
                   ),
                 ],
@@ -584,7 +704,11 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                   gradient: primaryGradient,
                   borderRadius: BorderRadius.circular(16.r),
                   boxShadow: [
-                    BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 12.r, offset: const Offset(0, 6)),
+                    BoxShadow(
+                      color: primaryColor.withValues(alpha: 0.3),
+                      blurRadius: 12.r,
+                      offset: const Offset(0, 6),
+                    ),
                   ],
                 ),
                 child: Center(

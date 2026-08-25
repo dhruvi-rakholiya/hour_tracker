@@ -453,7 +453,7 @@ class ReportsTab extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 80.h),
+              SizedBox(height: 130.h),
             ],
           ),
         );

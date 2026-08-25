@@ -24,6 +24,7 @@ const Color dangerColor = Color(0xFFEF4444);
 const Color successColor = Color(0xFF10B981);
 
 const Color dividerColor = Color(0xFFE2E8F0);
+const Color borderColor = Color(0xFFE2E8F0);
 const Color shadowColor = Color(0x1A6C5CE7);
 
 const LinearGradient primaryGradient = LinearGradient(
@@ -42,6 +43,18 @@ const LinearGradient billableGradient = LinearGradient(
   colors: [Color(0xFF34D399), Color(0xFF059669)],
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
+);
+
+const LinearGradient goldGradient = LinearGradient(
+  colors: [Color(0xFFFFB703), Color(0xFFFB8500)],
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+);
+
+const LinearGradient premiumBgGradient = LinearGradient(
+  colors: [Color(0xFF0F172A), Color(0xFF1E1B4B), Color(0xFF0F172A)],
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
 );
 
 Color parseColorHex(String? hexString, {Color fallback = primaryColor}) {

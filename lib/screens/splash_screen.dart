@@ -9,6 +9,7 @@ import 'package:hour_tracker/controllers/time_entry_controller.dart';
 import 'package:hour_tracker/controllers/timer_controller.dart';
 import 'package:hour_tracker/firebase_analysis.dart';
 import 'package:hour_tracker/for_ads/ads/ads_splash_utils.dart';
+import 'package:hour_tracker/screens/intro_screen.dart';
 import 'package:hour_tracker/screens/main_dashboard_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
@@ -39,9 +40,8 @@ class _SplashScreenState extends State<SplashScreen> {
           Get.put(TimeEntryController());
           Get.put(TimerController());
           Get.put(ReportController());
-          // Direct Navigation without named routes
-          Get.off(() => const MainDashboardScreen());
-          // fetchData();
+          // Direct Navigation to IntroScreen
+          Get.off(() => const IntroScreen());
         },
       );
     });
