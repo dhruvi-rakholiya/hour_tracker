@@ -133,132 +133,97 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                 fontWeight: FontWeight.bold,
                 color: textPrimary,
               ),
-              Row(
-                children: [
-                  // Highlighted PRO Gold Button
-                  CustomOpacityWidget(
-                    onTap: () => Get.to(() => const PremiumScreen()),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-                      decoration: BoxDecoration(
-                        gradient: goldGradient,
-                        borderRadius: BorderRadius.circular(12.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFFB8500).withValues(alpha: 0.4),
-                            blurRadius: 8.r,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.workspace_premium_rounded, color: white, size: 16.sp),
-                          SizedBox(width: 4.w),
-                          CustomAppText(
-                            text: "PRO",
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
-                            color: white,
-                          ),
-                        ],
-                      ),
-                    ),
+              CustomOpacityWidget(
+                onTap: () => Get.to(() => const AddEditProjectScreen()),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 8.h,
                   ),
-                  SizedBox(width: 8.w),
-                  CustomOpacityWidget(
-                    onTap: () => Get.to(() => const AddEditProjectScreen()),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                        vertical: 8.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: primaryColor,
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.add_rounded, color: white, size: 16.sp),
-                          SizedBox(width: 4.w),
-                          CustomAppText(
-                            text: "New Project",
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
-                            color: white,
-                          ),
-                        ],
-                      ),
-                    ),
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                ],
+                  child: Row(
+                    children: [
+                      Icon(Icons.add_rounded, color: white, size: 16.sp),
+                      SizedBox(width: 4.w),
+                      CustomAppText(
+                        text: "New Project",
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.bold,
+                        color: white,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
 
           SizedBox(height: 14.h),
 
-          // PRO Highlight Banner Card
-          CustomOpacityWidget(
-            onTap: () => Get.to(() => const PremiumScreen()),
-            child: Container(
-              padding: EdgeInsets.all(16.r),
-              decoration: BoxDecoration(
-                gradient: goldGradient,
-                borderRadius: BorderRadius.circular(20.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFFB8500).withValues(alpha: 0.35),
-                    blurRadius: 14.r,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(10.r),
-                    decoration: BoxDecoration(
-                      color: white.withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.workspace_premium_rounded,
-                      color: white,
-                      size: 26.sp,
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomAppText(
-                          text: "Upgrade to Hour Tracker PRO",
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: white,
-                        ),
-                        SizedBox(height: 2.h),
-                        CustomAppText(
-                          text: "Ad-Free, Unlimited Projects & PDF Exports",
-                          fontSize: 11.sp,
-                          color: white.withValues(alpha: 0.9),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: white,
-                    size: 14.sp,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          SizedBox(height: 16.h),
+          // // PRO Highlight Banner Card
+          // CustomOpacityWidget(
+          //   onTap: () => Get.to(() => const PremiumScreen()),
+          //   child: Container(
+          //     padding: EdgeInsets.all(16.r),
+          //     decoration: BoxDecoration(
+          //       gradient: goldGradient,
+          //       borderRadius: BorderRadius.circular(20.r),
+          //       boxShadow: [
+          //         BoxShadow(
+          //           color: const Color(0xFFFB8500).withValues(alpha: 0.35),
+          //           blurRadius: 14.r,
+          //           offset: const Offset(0, 4),
+          //         ),
+          //       ],
+          //     ),
+          //     child: Row(
+          //       children: [
+          //         Container(
+          //           padding: EdgeInsets.all(10.r),
+          //           decoration: BoxDecoration(
+          //             color: white.withValues(alpha: 0.2),
+          //             shape: BoxShape.circle,
+          //           ),
+          //           child: Icon(
+          //             Icons.workspace_premium_rounded,
+          //             color: white,
+          //             size: 26.sp,
+          //           ),
+          //         ),
+          //         SizedBox(width: 12.w),
+          //         Expanded(
+          //           child: Column(
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               CustomAppText(
+          //                 text: "Upgrade to Hour Tracker PRO",
+          //                 fontSize: 14.sp,
+          //                 fontWeight: FontWeight.bold,
+          //                 color: white,
+          //               ),
+          //               SizedBox(height: 2.h),
+          //               CustomAppText(
+          //                 text: "Ad-Free, Unlimited Projects & PDF Exports",
+          //                 fontSize: 11.sp,
+          //                 color: white.withValues(alpha: 0.9),
+          //               ),
+          //             ],
+          //           ),
+          //         ),
+          //         Icon(
+          //           Icons.arrow_forward_ios_rounded,
+          //           color: white,
+          //           size: 14.sp,
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          //
+          // SizedBox(height: 16.h),
 
           // Projects List Section
           GetBuilder<ProjectController>(
