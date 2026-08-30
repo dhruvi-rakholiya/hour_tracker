@@ -5,11 +5,14 @@ import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/controllers/project_controller.dart';
 import 'package:hour_tracker/controllers/timer_controller.dart';
+import 'package:hour_tracker/for_ads/ads/app_open_ad.dart';
+import 'package:hour_tracker/for_ads/ads/life_cycle.dart';
 import 'package:hour_tracker/models/project_model.dart';
 import 'package:hour_tracker/screens/add_edit_project_screen.dart';
 import 'package:hour_tracker/screens/focus_mode_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
+import 'package:hour_tracker/utils/app_premium_helper.dart';
 
 class TimerTab extends StatefulWidget {
   const TimerTab({super.key});
@@ -26,6 +29,7 @@ class _TimerTabState extends State<TimerTab> {
     _notesCtrl.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +58,6 @@ class _TimerTabState extends State<TimerTab> {
                         color: cardBgColor,
                         borderRadius: BorderRadius.circular(16.r),
                         border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
-                        boxShadow: [
-                          BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
-                        ],
                       ),
                       child: Row(
                         children: [
@@ -70,7 +71,11 @@ class _TimerTabState extends State<TimerTab> {
                             ),
                           ),
                           CustomOpacityWidget(
-                            onTap: () => Get.to(() => const AddEditProjectScreen()),
+                            onTap: () {
+                              if (AppPremiumHelper.checkProjectLimitAndPrompt(context)) {
+                                Get.to(() => const AddEditProjectScreen());
+                              }
+                            },
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                               decoration: BoxDecoration(
@@ -95,48 +100,86 @@ class _TimerTabState extends State<TimerTab> {
                     decoration: BoxDecoration(
                       color: cardBgColor,
                       borderRadius: BorderRadius.circular(16.r),
-                      boxShadow: [
-                        BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
-                      ],
+                      border: Border.all(color: borderColor),
                     ),
                     child: Row(
                       children: [
                         Expanded(
                           child: DropdownButtonHideUnderline(
-                            child: DropdownButton<ProjectModel>(
+                            child: DropdownButton<ProjectModel?>(
                               isExpanded: true,
-                              value: timerCtrl.selectedProject ?? projCtrl.selectedProject,
-                              hint: const CustomAppText(text: AppStrings.noProjectSelected, color: textMuted),
-                              items: projCtrl.projects.map((p) {
-                                return DropdownMenuItem<ProjectModel>(
-                                  value: p,
+                              value: timerCtrl.selectedProject,
+                              hint: Row(
+                                children: [
+                                  Container(
+                                    width: 12.w,
+                                    height: 12.w,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF6C5CE7),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  CustomAppText(
+                                    text: "General Work",
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: textPrimary,
+                                  ),
+                                ],
+                              ),
+                              items: [
+                                DropdownMenuItem<ProjectModel?>(
+                                  value: null,
                                   child: Row(
                                     children: [
                                       Container(
                                         width: 12.w,
                                         height: 12.w,
-                                        decoration: BoxDecoration(
-                                          color: parseColorHex(p.colorHex),
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFF6C5CE7),
                                           shape: BoxShape.circle,
                                         ),
                                       ),
                                       SizedBox(width: 10.w),
                                       CustomAppText(
-                                        text: p.name,
+                                        text: "General Work",
                                         fontSize: 15.sp,
                                         fontWeight: FontWeight.w600,
                                         color: textPrimary,
                                       ),
                                     ],
                                   ),
-                                );
-                              }).toList(),
+                                ),
+                                ...projCtrl.projects.map((p) {
+                                  return DropdownMenuItem<ProjectModel?>(
+                                    value: p,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 12.w,
+                                          height: 12.w,
+                                          decoration: BoxDecoration(
+                                            color: parseColorHex(p.colorHex),
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.w),
+                                        CustomAppText(
+                                          text: p.name,
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: textPrimary,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ],
                               onChanged: timerCtrl.isRunning
                                   ? null
                                   : (p) {
-                                      if (p != null) {
-                                        timerCtrl.setProject(p);
-                                      }
+                                      timerCtrl.setProject(p);
                                     },
                             ),
                           ),
@@ -144,7 +187,11 @@ class _TimerTabState extends State<TimerTab> {
                         if (!timerCtrl.isRunning)
                           IconButton(
                             icon: Icon(Icons.add_circle_outline_rounded, color: primaryColor, size: 22.sp),
-                            onPressed: () => Get.to(() => const AddEditProjectScreen()),
+                            onPressed: () {
+                              if (AppPremiumHelper.checkProjectLimitAndPrompt(context)) {
+                                Get.to(() => const AddEditProjectScreen());
+                              }
+                            },
                             tooltip: "Add New Project",
                           ),
                       ],
@@ -155,94 +202,94 @@ class _TimerTabState extends State<TimerTab> {
 
               SizedBox(height: 16.h),
 
-              // Focus Mode Launch Card & Switch
-              Container(
-                padding: EdgeInsets.all(14.r),
-                decoration: BoxDecoration(
-                  color: cardBgColor,
-                  borderRadius: BorderRadius.circular(16.r),
-                  border: Border.all(color: primaryColor.withValues(alpha: 0.25)),
-                  boxShadow: [
-                    BoxShadow(color: shadowColor, blurRadius: 8.r, offset: const Offset(0, 3)),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8.r),
-                      decoration: BoxDecoration(
-                        color: primaryColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: Icon(Icons.center_focus_strong_rounded, color: primaryColor, size: 22.sp),
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomAppText(
-                            text: "Focus Mode",
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimary,
-                          ),
-                          SizedBox(height: 2.h),
-                          CustomAppText(
-                            text: "Full-screen timer view",
-                            fontSize: 11.sp,
-                            color: textMuted,
-                            maxLines: 1,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    CustomOpacityWidget(
-                      onTap: () {
-                        timerCtrl.toggleFocusMode(true);
-                        Get.to(() => const FocusModeScreen());
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+              // Focus Mode Launch Card & Switch (ONLY visible when timer is running)
+              if (timerCtrl.isRunning) ...[
+                Container(
+                  padding: EdgeInsets.all(14.r),
+                  decoration: BoxDecoration(
+                    color: cardBgColor,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(color: primaryColor.withValues(alpha: 0.25)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(8.r),
                         decoration: BoxDecoration(
-                          gradient: primaryGradient,
-                          borderRadius: BorderRadius.circular(20.r),
+                          color: primaryColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10.r),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        child: Icon(Icons.center_focus_strong_rounded, color: primaryColor, size: 22.sp),
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.fullscreen_rounded, color: white, size: 16.sp),
-                            SizedBox(width: 4.w),
                             CustomAppText(
-                              text: "Focus",
-                              fontSize: 11.sp,
+                              text: "Focus Mode",
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
-                              color: white,
+                              color: textPrimary,
+                            ),
+                            SizedBox(height: 2.h),
+                            CustomAppText(
+                              text: "Full-screen timer view",
+                              fontSize: 11.sp,
+                              color: textMuted,
+                              maxLines: 1,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    SizedBox(width: 6.w),
-                    Transform.scale(
-                      scale: 0.85,
-                      child: Switch.adaptive(
-                        value: timerCtrl.isFocusMode,
-                        activeColor: primaryColor,
-                        onChanged: (val) {
-                          timerCtrl.toggleFocusMode(val);
-                          if (val) {
-                            Get.to(() => const FocusModeScreen());
-                          }
+                      SizedBox(width: 8.w),
+                      CustomOpacityWidget(
+                        onTap: () {
+                          timerCtrl.toggleFocusMode(true);
+                          Get.to(() => const FocusModeScreen());
                         },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                          decoration: BoxDecoration(
+                            gradient: primaryGradient,
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.fullscreen_rounded, color: white, size: 16.sp),
+                              SizedBox(width: 4.w),
+                              CustomAppText(
+                                text: "Focus",
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.bold,
+                                color: white,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 6.w),
+                      Transform.scale(
+                        scale: 0.85,
+                        child: Switch.adaptive(
+                          value: timerCtrl.isFocusMode,
+                          activeColor: primaryColor,
+                          onChanged: (val) {
+                            timerCtrl.toggleFocusMode(val);
+                            if (val) {
+                              Get.to(() => const FocusModeScreen());
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                SizedBox(height: 16.h),
+              ],
 
-              SizedBox(height: 24.h),
+              SizedBox(height: 8.h),
 
               // Large Circular Timer Display
               Container(
@@ -253,13 +300,6 @@ class _TimerTabState extends State<TimerTab> {
                   gradient: timerCtrl.isPaused
                       ? const LinearGradient(colors: [nonBillableColor, Colors.orangeAccent])
                       : (timerCtrl.isRunning ? timerGradient : primaryGradient),
-                  boxShadow: [
-                    BoxShadow(
-                      color: (timerCtrl.isPaused ? nonBillableColor : primaryColor).withValues(alpha: 0.35),
-                      blurRadius: 20.r,
-                      spreadRadius: 2.r,
-                    ),
-                  ],
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(12.r),
@@ -346,9 +386,6 @@ class _TimerTabState extends State<TimerTab> {
                         decoration: BoxDecoration(
                           gradient: primaryGradient,
                           borderRadius: BorderRadius.circular(30.r),
-                          boxShadow: [
-                            BoxShadow(color: primaryColor.withValues(alpha: 0.35), blurRadius: 12.r, offset: const Offset(0, 6)),
-                          ],
                         ),
                         child: Row(
                           children: [
@@ -368,13 +405,6 @@ class _TimerTabState extends State<TimerTab> {
                         decoration: BoxDecoration(
                           color: timerCtrl.isPaused ? billableColor : nonBillableColor,
                           borderRadius: BorderRadius.circular(30.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: (timerCtrl.isPaused ? billableColor : nonBillableColor).withValues(alpha: 0.3),
-                              blurRadius: 10.r,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
                         ),
                         child: Row(
                           children: [
@@ -405,9 +435,6 @@ class _TimerTabState extends State<TimerTab> {
                         decoration: BoxDecoration(
                           color: dangerColor,
                           borderRadius: BorderRadius.circular(30.r),
-                          boxShadow: [
-                            BoxShadow(color: dangerColor.withValues(alpha: 0.3), blurRadius: 10.r, offset: const Offset(0, 4)),
-                          ],
                         ),
                         child: Row(
                           children: [
@@ -435,9 +462,7 @@ class _TimerTabState extends State<TimerTab> {
                 decoration: BoxDecoration(
                   color: cardBgColor,
                   borderRadius: BorderRadius.circular(16.r),
-                  boxShadow: [
-                    BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
-                  ],
+                  border: Border.all(color: borderColor),
                 ),
                 child: Column(
                   children: [

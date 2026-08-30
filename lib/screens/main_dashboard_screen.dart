@@ -13,6 +13,11 @@ import 'package:hour_tracker/screens/tabs/reports_tab.dart';
 import 'package:hour_tracker/screens/tabs/timer_tab.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 
+import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
+import 'package:hour_tracker/for_ads/ads/life_cycle.dart';
+import 'package:hour_tracker/services/notification_service.dart';
+import 'package:upgrader/upgrader.dart';
+
 class MainDashboardScreen extends StatefulWidget {
   const MainDashboardScreen({super.key});
 
@@ -23,7 +28,21 @@ class MainDashboardScreen extends StatefulWidget {
 class _MainDashboardScreenState extends State<MainDashboardScreen> {
   int _currentIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    AppLifecycleReactor.isAppOpenSuppressed = (_currentIndex == 1);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService.instance.requestNotificationPermission();
+      // Custom Remote Config update check commented out in favor of upgrader pub.dev package
+      // if (AdsVariable.isUpdateAvailable) {
+      //   showAppUpdateDialog(context);
+      // }
+    });
+  }
+
   void _onTabSelected(int index) {
+    AppLifecycleReactor.isAppOpenSuppressed = (index == 1);
     setState(() => _currentIndex = index);
   }
 
@@ -37,21 +56,23 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
       const ProjectsSettingsTab(),
     ];
 
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        backgroundColor: appBgColor,
-        extendBody: true,
-        body: IndexedStack(
-          index: _currentIndex,
-          children: tabs,
-        ).paddingOnly(top: 20.h),
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TabBannerAdWidget(currentIndex: _currentIndex),
-            _buildFloatingBottomBar(),
-          ],
+    return UpgradeAlert(
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          backgroundColor: appBgColor,
+          extendBody: true,
+          body: IndexedStack(
+            index: _currentIndex,
+            children: tabs,
+          ).paddingOnly(top: 20.h),
+          bottomNavigationBar: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TabBannerAdWidget(currentIndex: _currentIndex),
+              _buildFloatingBottomBar(),
+            ],
+          ),
         ),
       ),
     );

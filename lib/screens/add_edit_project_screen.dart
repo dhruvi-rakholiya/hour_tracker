@@ -10,6 +10,7 @@ import 'package:hour_tracker/models/project_model.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 import 'package:hour_tracker/utils/app_show_toast.dart';
+import 'package:hour_tracker/utils/app_premium_helper.dart';
 
 class AddEditProjectScreen extends StatefulWidget {
   final ProjectModel? existingProject;
@@ -112,6 +113,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     final projCtrl = Get.find<ProjectController>();
     bool success;
     if (widget.existingProject == null) {
+      if (!AppPremiumHelper.checkProjectLimitAndPrompt(context)) {
+        return;
+      }
       success = await projCtrl.addProject(project);
     } else {
       success = await projCtrl.updateProject(project);

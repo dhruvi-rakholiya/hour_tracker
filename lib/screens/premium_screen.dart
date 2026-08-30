@@ -1,10 +1,24 @@
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
+import 'package:hour_tracker/firebase_analysis.dart';
 import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
+import 'package:hour_tracker/for_ads/ads/app_open_ad.dart';
+import 'package:hour_tracker/for_ads/ads/life_cycle.dart';
+import 'package:hour_tracker/for_ads/utils/app_constants.dart';
+import 'package:hour_tracker/screens/privacy_policy_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
+import 'package:hour_tracker/utils/app_loader.dart';
+import 'package:hour_tracker/utils/app_show_toast.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum PremiumPlanType { yearly, weekly }
 
@@ -17,6 +31,31 @@ class PremiumScreen extends StatefulWidget {
 
 class _PremiumScreenState extends State<PremiumScreen> {
   PremiumPlanType _selectedPlan = PremiumPlanType.yearly;
+  int selectedPlan = 0;
+  Package? selectedPackage;
+  String weeklyPrice = "";
+  String yearlyPrice = "";
+  String perWeekPrice = "";
+  String currencySymbol = "";
+  String discountPercentage = "";
+
+  @override
+  void initState() {
+    super.initState();
+    AppLifecycleReactor.isAppOpenSuppressed = true;
+    packageData().then((onValue) {
+      setState(() {
+        fetchData();
+        getPricePackage();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    AppLifecycleReactor.isAppOpenSuppressed = false;
+    super.dispose();
+  }
 
   void _onSubscribe() {
     AdsVariable.isPurchase = true;
@@ -126,13 +165,6 @@ class _PremiumScreenState extends State<PremiumScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: primaryGradient,
-                      boxShadow: [
-                        BoxShadow(
-                          color: primaryColor.withValues(alpha: 0.35),
-                          blurRadius: 22.r,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
                     ),
                     child: Icon(
                       Icons.workspace_premium_rounded,
@@ -172,22 +204,13 @@ class _PremiumScreenState extends State<PremiumScreen> {
                       color: cardBgColor,
                       borderRadius: BorderRadius.circular(20.r),
                       border: Border.all(color: borderColor),
-                      boxShadow: [
-                        BoxShadow(
-                          color: shadowColor,
-                          blurRadius: 14.r,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
                     ),
                     child: Column(
                       children: [
                         _buildFeatureRow(Icons.all_inclusive_rounded, "Unlimited Client Projects & Tasks"),
                         SizedBox(height: 10.h),
                         _buildFeatureRow(Icons.block_rounded, "100% Ad-Free Across All Screens"),
-                        SizedBox(height: 10.h),
-                        _buildFeatureRow(Icons.picture_as_pdf_rounded, "1-Tap PDF Invoice & Report Export"),
-                        SizedBox(height: 10.h),
+                           SizedBox(height: 10.h),
                         _buildFeatureRow(Icons.bolt_rounded, "Advanced Overtime & Custom Rates"),
                       ],
                     ),
@@ -202,9 +225,9 @@ class _PremiumScreenState extends State<PremiumScreen> {
                       _buildFullWidthPlanCard(
                         planType: PremiumPlanType.yearly,
                         title: "Yearly Pass",
-                        price: "\$29.99 / Year",
-                        subPrice: "\$2.49 / Month (Billed Annually)",
-                        badgeText: "SAVE 60% • BEST VALUE",
+                        price: yearlyPrice,
+                        subPrice: "$currencySymbol$perWeekPrice / week",
+                        badgeText: "SAVE $discountPercentage% • BEST VALUE",
                       ),
 
                       SizedBox(height: 12.h),
@@ -213,7 +236,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                       _buildFullWidthPlanCard(
                         planType: PremiumPlanType.weekly,
                         title: "Weekly Pass",
-                        price: "\$2.99 / Week",
+                        price: weeklyPrice,
                         subPrice: "Billed weekly • Cancel anytime",
                         badgeText: null,
                       ),
@@ -224,20 +247,16 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
                   // Subscribe Action Button (App Primary Gradient)
                   CustomOpacityWidget(
-                    onTap: _onSubscribe,
+                    onTap: (){
+                      showLoadingDialog(context);
+                      getPremiumVersion(context);
+                    },
                     child: Container(
                       width: double.infinity,
                       padding: EdgeInsets.symmetric(vertical: 16.h),
                       decoration: BoxDecoration(
                         gradient: primaryGradient,
                         borderRadius: BorderRadius.circular(16.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: primaryColor.withValues(alpha: 0.4),
-                            blurRadius: 16.r,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -272,15 +291,28 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
                   SizedBox(height: 10.h),
 
-                  // Footer Actions
+                  // Footer Actions (Only 2 links: Privacy Policy & Google Services)
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildFooterLink("Restore"),
-                      CustomAppText(text: "•", fontSize: 10.sp, color: textMuted),
-                      _buildFooterLink("Privacy Policy"),
-                      CustomAppText(text: "•", fontSize: 10.sp, color: textMuted),
-                      _buildFooterLink("Terms of Service"),
+                      _buildFooterLink(
+                        "Privacy Policy",
+                        onTap: () {
+                          Get.to(()=>PrivacyPolicyScreen());
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14.w),
+                        child: CustomAppText(
+                          text: "•",
+                          fontSize: 10.sp,
+                          color: textMuted,
+                        ),
+                      ),
+                      _buildFooterLink(
+                        "Google Services",
+                        onTap: openSubscriptions,
+                      ),
                     ],
                   ),
                 ],
@@ -291,6 +323,18 @@ class _PremiumScreenState extends State<PremiumScreen> {
       ),
     );
   }
+
+
+  final String subscriptionsUrl = "https://play.google.com/store/account/subscriptions";
+
+  Future<void> openSubscriptions() async {
+    if (await canLaunchUrl(Uri.parse(subscriptionsUrl))) {
+      await launchUrl(Uri.parse(subscriptionsUrl));
+    } else {
+      throw 'Could not launch $subscriptionsUrl';
+    }
+  }
+
 
   Widget _buildFeatureRow(IconData icon, String text) {
     return Row(
@@ -334,6 +378,25 @@ class _PremiumScreenState extends State<PremiumScreen> {
         setState(() {
           _selectedPlan = planType;
         });
+        if(planType == PremiumPlanType.yearly){
+          selectedPackage = AdsVariable.availablePackages?.values.where((test) {
+            if (Platform.isIOS) {
+              return test.storeProduct.identifier == "nsr.aienhancer.com.annualplan";
+            } else {
+              return test.storeProduct.identifier == "yearlysub:yearlysub";
+            }
+          }).first;
+          log('selectedPackage-------->$selectedPackage');
+        }else{
+          selectedPackage = AdsVariable.availablePackages?.values.where((test) {
+            if (Platform.isIOS) {
+              return test.storeProduct.identifier == "nsr.aienhancer.com.annualplan";
+            } else {
+              return test.storeProduct.identifier == "weeklysubscription:weeklysubscription";
+            }
+          }).first;
+          log('selectedPackage-------->$selectedPackage');
+        }
       },
       child: Stack(
         clipBehavior: Clip.none,
@@ -350,14 +413,6 @@ class _PremiumScreenState extends State<PremiumScreen> {
                 color: isSelected ? primaryColor : borderColor,
                 width: isSelected ? 2.w : 1.w,
               ),
-              boxShadow: [
-                if (isSelected)
-                  BoxShadow(
-                    color: primaryColor.withValues(alpha: 0.18),
-                    blurRadius: 12.r,
-                    offset: const Offset(0, 4),
-                  ),
-              ],
             ),
             child: Row(
               children: [
@@ -434,9 +489,9 @@ class _PremiumScreenState extends State<PremiumScreen> {
     );
   }
 
-  Widget _buildFooterLink(String text) {
+  Widget _buildFooterLink(String text, {required VoidCallback onTap}) {
     return CustomOpacityWidget(
-      onTap: () {},
+      onTap: onTap,
       child: CustomAppText(
         text: text,
         fontSize: 10.5.sp,
@@ -444,4 +499,175 @@ class _PremiumScreenState extends State<PremiumScreen> {
       ),
     );
   }
+
+
+  Future<void> fetchData() async {
+    if ((AdsVariable.availablePackages?.entries ?? []).length >= 2) {
+      // selectedPackage = (AdsVariable.availablePackages?.entries ?? []).elementAt(1).value;
+      selectedPackage = AdsVariable.availablePackages?.values.where((test) {
+        if (Platform.isIOS) {
+          return test.storeProduct.identifier == 'nsr.aienhancer.com.annualplan';
+        } else {
+          return test.storeProduct.identifier == 'yearlysub:yearlysub';
+        }
+      }).first;
+      log("Default Main selectedPackage :- $selectedPackage");
+    }
+  }
+
+  Future<void> packageData() async {
+    Offerings? offerings;
+    try {
+      offerings = await Purchases.getOfferings();
+      if (kDebugMode) {
+        print(offerings);
+      }
+
+      AdsVariable.availablePackages = {
+        for (var package in offerings.current?.availablePackages ?? []) package.identifier: package,
+      };
+      print(AdsVariable.availablePackages);
+      if (AdsVariable.availablePackages == null) {
+        print('no package avalible');
+      }
+
+      log("availablePackages ********** ${AdsVariable.availablePackages}");
+
+      if ((AdsVariable.availablePackages?.entries ?? []).length >= 2) {
+        selectedPackage = AdsVariable.availablePackages?.values.where((test) {
+          if (Platform.isIOS) {
+            return test.storeProduct.identifier == 'nsr.aienhancer.com.annualplan';
+          } else {
+            return test.storeProduct.identifier == 'yearlysub:yearlysub';
+          }
+        }).first;
+      }
+    } on PlatformException catch (e) {
+      if (AdsVariable.availablePackages == null) {
+        print('no package avalible');
+      }
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  void getPricePackage() {
+    final weeklyPlan = AdsVariable.availablePackages?.values.where((test) {
+      if (Platform.isIOS) {
+        return test.storeProduct.identifier == "nsr.aienhancer.com.weeklyplan";
+      } else {
+        return test.storeProduct.identifier == "weeklysubscription:weeklysubscription";
+      }
+    });
+    final yearlyPlan = AdsVariable.availablePackages?.values.where((test) {
+      if (Platform.isIOS) {
+        return test.storeProduct.identifier == "nsr.aienhancer.com.annualplan";
+      } else {
+        return test.storeProduct.identifier == "yearlysub:yearlysub";
+      }
+    });
+
+    // Safely extract price strings
+    weeklyPrice = weeklyPlan?.isNotEmpty == true ? weeklyPlan!.first.storeProduct.priceString : '₹25.00';
+    yearlyPrice = yearlyPlan?.isNotEmpty == true ? yearlyPlan!.first.storeProduct.priceString : '₹40.00';
+
+    log("Raw weeklyPrice: $weeklyPrice");
+    log("Raw yearlyPrice: $yearlyPrice");
+
+    // Extract currency symbol and numeric price parts
+    String cleanedWeeklyAmount = weeklyPrice.replaceAll(RegExp(r'[^\d.]'), '');
+    String cleanedYearlyAmount = yearlyPrice.replaceAll(RegExp(r'[^\d.]'), '');
+    currencySymbol = yearlyPrice.replaceAll(RegExp(r'[0-9.,]'), '');
+
+    log("Cleaned weekly amount: $cleanedWeeklyAmount");
+    log("Cleaned yearly amount: $cleanedYearlyAmount");
+    log("Currency symbol: $currencySymbol");
+
+    // Parse prices with fallback to 0.0
+    double weekPrice1Value = double.tryParse(cleanedWeeklyAmount) ?? 0.0;
+    double yearlyPrice2Value = double.tryParse(cleanedYearlyAmount) ?? 0.0;
+
+    // Calculate weekly price from yearly
+    perWeekPrice = (yearlyPrice2Value / 52).toStringAsFixed(2);
+
+
+    double fullYearFromWeekly = weekPrice1Value * 52;
+
+    double discountPlan2 = 0;
+    if (fullYearFromWeekly > 0) {
+      discountPlan2 = ((fullYearFromWeekly - yearlyPrice2Value) / fullYearFromWeekly) * 100;
+    }
+
+    discountPercentage = discountPlan2.toStringAsFixed(0);
+    print("Discount Percentage: $discountPercentage");
+  }
+
+  void getPremiumVersion(BuildContext context) async {
+    log("getPremiumVersion selectedPackage :- $selectedPackage");
+
+    try {
+      final customerInfo = await Purchases.purchasePackage(selectedPackage!);
+      appData.entitlementIsActive = customerInfo.entitlements.all[entitlementKey]!.isActive;
+      initPlatformState(context);
+    } on PlatformException catch (e) {
+      // hideLoadingDialog();
+      final errorCode = PurchasesErrorHelper.getErrorCode(e);
+      if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
+        if (kDebugMode) {
+          print('User cancelled');
+        }
+      } else if (errorCode == PurchasesErrorCode.purchaseNotAllowedError) {
+        if (kDebugMode) {
+          print('User not allowed to purchase');
+        }
+      } else if (errorCode == PurchasesErrorCode.paymentPendingError) {
+        if (kDebugMode) {
+          print('Payment is pending');
+        }
+      }
+    } finally {
+      Get.back();
+      log("============= RUN FINALLY =============");
+    }
+  }
+
+  Future<void> initPlatformState(BuildContext context) async {
+    final customerInfo = await Purchases.getCustomerInfo();
+    if (customerInfo.entitlements.all[entitlementKey] != null &&
+        customerInfo.entitlements.all[entitlementKey]!.isActive == true) {
+      AdsVariable.resetAdIds();
+      AdsVariable.isPurchase = true;
+
+      showToast("Your Plan Subscribe Successfully");
+
+      if (selectedPlan == 0) {
+        FirebaseAnalyticsService.logEvent(eventName: 'YEAR_PLAN_PURCHASE');
+
+      } else if (selectedPlan == 1) {
+        FirebaseAnalyticsService.logEvent(eventName: 'WEEK_PLAN_PURCHASE');
+      }
+      Get.back();
+    } else {
+      AdsVariable.isPurchase = false;
+      showToast("Your Plan Failed");
+    }
+  }
+
 }
+
+
+class AppData {
+  static final AppData _appData = AppData._internal();
+
+  bool entitlementIsActive = false;
+  String appUserID = '';
+
+  factory AppData() {
+    return _appData;
+  }
+
+  AppData._internal();
+}
+
+final appData = AppData();

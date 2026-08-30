@@ -48,6 +48,7 @@ class AdsSplashUtils {
 
     AdsVariable.openAdInSplash = prefs.getBool("showOpenAdInSplash") ?? false;
     AdsVariable.click = prefs.getString("click") ?? "2";
+    AdsVariable.freeProjectLimit = prefs.getInt("free_project_limit") ?? 2;
 
     log("await AdsVariable.isInternetConnected() :- ${await AdsVariable.isInternetConnected()}");
 
@@ -107,6 +108,28 @@ class AdsSplashUtils {
         // AdsVariable.btnTextColor = mapValues1["buttonTxtColor"].toString();
         AdsVariable.click = mapValues1["click"];
         AdsVariable.openAdInSplash = mapValues1["showOpenAdInSplash"];
+        if (mapValues1["free_project_limit"] != null) {
+          AdsVariable.freeProjectLimit = int.tryParse(mapValues1["free_project_limit"].toString()) ?? 2;
+        } else if (mapValues1["project_limit"] != null) {
+          AdsVariable.freeProjectLimit = int.tryParse(mapValues1["project_limit"].toString()) ?? 2;
+        }
+
+        // Remote config custom update flow commented out in favor of upgrader package
+        // if (mapValues1["update_available"] != null) {
+        //   AdsVariable.isUpdateAvailable = mapValues1["update_available"] == true || mapValues1["update_available"].toString() == "true";
+        // }
+        // if (mapValues1["force_update"] != null) {
+        //   AdsVariable.isForceUpdate = mapValues1["force_update"] == true || mapValues1["force_update"].toString() == "true";
+        // }
+        // if (mapValues1["update_title"] != null && mapValues1["update_title"].toString().isNotEmpty) {
+        //   AdsVariable.updateTitle = mapValues1["update_title"].toString();
+        // }
+        // if (mapValues1["update_message"] != null && mapValues1["update_message"].toString().isNotEmpty) {
+        //   AdsVariable.updateMessage = mapValues1["update_message"].toString();
+        // }
+        // if (mapValues1["update_url"] != null) {
+        //   AdsVariable.updateUrl = mapValues1["update_url"].toString();
+        // }
 
         /// Store firebase remote config data into shared preferences :
 
@@ -136,6 +159,7 @@ class AdsSplashUtils {
         // );
         prefs.setBool("showOpenAdInSplash", mapValues1["showOpenAdInSplash"] ?? false);
         prefs.setString("click", mapValues1["click"] ?? "2");
+        prefs.setInt("free_project_limit", AdsVariable.freeProjectLimit);
 
         /// Check available purchases
 
@@ -213,7 +237,7 @@ class AdsSplashUtils {
       }
       if (AdsVariable.isPurchase) {
         showLog("Purchase ----->${AdsVariable.isPurchase}");
-        AdsVariable.resetAdIds;
+        AdsVariable.resetAdIds();
       }
     } catch (e) {
       showLog("PURCHASE_ERROR >> ${e.toString()}");

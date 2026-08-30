@@ -11,9 +11,17 @@ class AdsVariable {
   static bool isShowingAd = false;
   static late ConnectivityResult connectivityResult;
   static bool isPurchase = false;
+  static int freeProjectLimit = 2;
   static String dataGDPR = "";
   static Map<String, Package>? availablePackages;
   static bool isPrivacyOptionsRequired = false;
+
+  /// App Update Configuration
+  static bool isUpdateAvailable = false;
+  static bool isForceUpdate = false;
+  static String updateTitle = "Update Available 🚀";
+  static String updateMessage = "A new version of Hour Tracker is available with exciting new features and improvements. Please update your app!";
+  static String updateUrl = "";
 
   static void resetAdIds() {
     appOpenAdsIOS = "11";

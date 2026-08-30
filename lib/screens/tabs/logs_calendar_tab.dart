@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
+import 'package:hour_tracker/common_widgets/delete_confirmation_dialog.dart';
 import 'package:hour_tracker/controllers/time_entry_controller.dart';
 
 import 'package:hour_tracker/screens/add_edit_entry_screen.dart';
@@ -226,7 +227,14 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
                                     SizedBox(width: 12.w),
                                     // Delete Action
                                     CustomOpacityWidget(
-                                      onTap: () => entryCtrl.deleteTimeEntry(entry.id!),
+                                      onTap: () {
+                                        showDeleteConfirmationDialog(
+                                          context: context,
+                                          title: "Delete Shift Log",
+                                          message: "Are you sure you want to delete this shift log for ${entry.projectName}? This action cannot be undone.",
+                                          onDelete: () => entryCtrl.deleteTimeEntry(entry.id!),
+                                        );
+                                      },
                                       child: Icon(Icons.delete_outline_rounded, size: 18.sp, color: dangerColor),
                                     ),
                                   ],

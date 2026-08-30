@@ -686,7 +686,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 _buildTaskChip("UI Design Systems", "3.5 hrs", true),
                 SizedBox(height: 6.h),
                 // Task Chip 2
-                _buildTaskChip("Stripe Payment API", "4.0 hrs", true),
+                _buildTaskChip("Backend API Integration", "4.0 hrs", true),
                 SizedBox(height: 6.h),
                 // Task Chip 3
                 _buildTaskChip("Client Review Session", "1.0 hr", false),

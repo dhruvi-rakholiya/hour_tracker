@@ -68,19 +68,16 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final projCtrl = Get.find<ProjectController>();
-      if (projCtrl.projects.isNotEmpty) {
-        if (entry != null && entry.projectId != null) {
+      if (entry != null) {
+        if (entry.projectId != null && projCtrl.projects.isNotEmpty) {
           _selectedProject = projCtrl.projects.firstWhereOrNull(
             (p) => p.id == entry.projectId,
           );
+        } else {
+          _selectedProject = null; // Explicitly stay General Work
         }
-        _selectedProject ??= projCtrl.projects.first;
-        if (entry == null) {
-          _hourlyRate = _selectedProject!.hourlyRate;
-          _rateCtrl.text = _hourlyRate.toStringAsFixed(0);
-        }
-        setState(() {});
       }
+      setState(() {});
     });
   }
 
@@ -276,46 +273,83 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                       ),
                       SizedBox(height: 8.h),
                       DropdownButtonHideUnderline(
-                        child: DropdownButton<ProjectModel>(
+                        child: DropdownButton<ProjectModel?>(
                           isExpanded: true,
                           value: _selectedProject,
-                          hint: const CustomAppText(
-                            text: AppStrings.noProjectSelected,
-                            color: textMuted,
+                          hint: Row(
+                            children: [
+                              Container(
+                                width: 12.w,
+                                height: 12.w,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF6C5CE7),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              SizedBox(width: 10.w),
+                              CustomAppText(
+                                text: "General Work",
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w600,
+                                color: textPrimary,
+                              ),
+                            ],
                           ),
-                          items: projCtrl.projects.map((p) {
-                            return DropdownMenuItem<ProjectModel>(
-                              value: p,
+                          items: [
+                            DropdownMenuItem<ProjectModel?>(
+                              value: null,
                               child: Row(
                                 children: [
                                   Container(
                                     width: 12.w,
                                     height: 12.w,
-                                    decoration: BoxDecoration(
-                                      color: parseColorHex(p.colorHex),
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF6C5CE7),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
                                   SizedBox(width: 10.w),
                                   CustomAppText(
-                                    text: p.name,
+                                    text: "General Work",
                                     fontSize: 15.sp,
                                     fontWeight: FontWeight.w600,
                                     color: textPrimary,
                                   ),
                                 ],
                               ),
-                            );
-                          }).toList(),
+                            ),
+                            ...projCtrl.projects.map((p) {
+                              return DropdownMenuItem<ProjectModel?>(
+                                value: p,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 12.w,
+                                      height: 12.w,
+                                      decoration: BoxDecoration(
+                                        color: parseColorHex(p.colorHex),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    SizedBox(width: 10.w),
+                                    CustomAppText(
+                                      text: p.name,
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: textPrimary,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                          ],
                           onChanged: (p) {
-                            if (p != null) {
-                              setState(() {
-                                _selectedProject = p;
-                                _rateCtrl.text = p.hourlyRate.toStringAsFixed(
-                                  0,
-                                );
-                              });
-                            }
+                            setState(() {
+                              _selectedProject = p;
+                              if (p != null) {
+                                _rateCtrl.text = p.hourlyRate.toStringAsFixed(0);
+                              }
+                            });
                           },
                         ),
                       ),

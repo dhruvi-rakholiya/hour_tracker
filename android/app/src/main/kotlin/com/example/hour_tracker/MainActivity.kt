@@ -1,4 +1,4 @@
-package com.example.hour_tracker
+package flut.testingapps.forallplans
 
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable

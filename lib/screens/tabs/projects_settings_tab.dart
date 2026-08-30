@@ -3,12 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
+import 'package:hour_tracker/common_widgets/delete_confirmation_dialog.dart';
 import 'package:hour_tracker/controllers/project_controller.dart';
 import 'package:hour_tracker/controllers/settings_controller.dart';
 import 'package:hour_tracker/screens/add_edit_project_screen.dart';
-import 'package:hour_tracker/screens/premium_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
+import 'package:hour_tracker/utils/app_premium_helper.dart';
+import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
 
 class ProjectsSettingsTab extends StatefulWidget {
   const ProjectsSettingsTab({super.key});
@@ -49,7 +51,9 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
     final settingsCtrl = Get.find<SettingsController>();
     final daily = double.tryParse(_dailyTargetCtrl.text.trim()) ?? 8.0;
     final thresh = double.tryParse(_overtimeThreshCtrl.text.trim()) ?? 8.0;
-    final mult = double.tryParse(_overtimeMultCtrl.text.trim()) ?? 1.5;
+    final mult = AdsVariable.isPurchase
+        ? (double.tryParse(_overtimeMultCtrl.text.trim()) ?? 1.5)
+        : 1.0;
 
     final newSettings = settingsCtrl.settings.copyWith(
       dailyTargetHours: daily,
@@ -134,7 +138,11 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                 color: textPrimary,
               ),
               CustomOpacityWidget(
-                onTap: () => Get.to(() => const AddEditProjectScreen()),
+                onTap: () {
+                  if (AppPremiumHelper.checkProjectLimitAndPrompt(context)) {
+                    Get.to(() => const AddEditProjectScreen());
+                  }
+                },
                 child: Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: 12.w,
@@ -331,7 +339,14 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                             ),
                             SizedBox(width: 8.w),
                             CustomOpacityWidget(
-                              onTap: () => projCtrl.deleteProject(p.id!),
+                              onTap: () {
+                                showDeleteConfirmationDialog(
+                                  context: context,
+                                  title: "Delete Project",
+                                  message: "Are you sure you want to delete project '${p.name}'? All tasks associated with this project will also be removed.",
+                                  onDelete: () => projCtrl.deleteProject(p.id!),
+                                );
+                              },
                               child: Icon(
                                 Icons.delete_outline_rounded,
                                 size: 18.sp,
@@ -405,8 +420,14 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                                     ),
                                     SizedBox(width: 4.w),
                                     CustomOpacityWidget(
-                                      onTap: () =>
-                                          projCtrl.deleteTask(t.id!, p.id!),
+                                      onTap: () {
+                                        showDeleteConfirmationDialog(
+                                          context: context,
+                                          title: "Remove Task",
+                                          message: "Are you sure you want to remove task '${t.name}' from project '${p.name}'?",
+                                          onDelete: () => projCtrl.deleteTask(t.id!, p.id!),
+                                        );
+                                      },
                                       child: Icon(
                                         Icons.close_rounded,
                                         size: 14.sp,
@@ -522,34 +543,72 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                     SizedBox(height: 12.h),
 
                     // Overtime Multiplier
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CustomAppText(
-                          text: AppStrings.overtimeMultiplier,
-                          fontSize: 13.sp,
-                          color: textSecondary,
-                        ),
-                        SizedBox(
-                          width: 80.w,
-                          child: TextField(
-                            controller: _overtimeMultCtrl,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold,
-                              color: textPrimary,
-                            ),
-                            decoration: InputDecoration(
-                              isDense: true,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.r),
+                    CustomOpacityWidget(
+                      onTap: () {
+                        if (!AdsVariable.isPurchase) {
+                          AppPremiumHelper.showOvertimeLockedBottomSheet(context);
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              CustomAppText(
+                                text: AppStrings.overtimeMultiplier,
+                                fontSize: 13.sp,
+                                color: textSecondary,
+                              ),
+                              if (!AdsVariable.isPurchase) ...[
+                                SizedBox(width: 6.w),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                                  decoration: BoxDecoration(
+                                    gradient: primaryGradient,
+                                    borderRadius: BorderRadius.circular(6.r),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.lock_rounded, size: 10.sp, color: white),
+                                      SizedBox(width: 2.w),
+                                      CustomAppText(
+                                        text: "PRO",
+                                        fontSize: 9.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: white,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          SizedBox(
+                            width: 80.w,
+                            child: TextField(
+                              controller: _overtimeMultCtrl,
+                              enabled: AdsVariable.isPurchase,
+                              readOnly: !AdsVariable.isPurchase,
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold,
+                                color: AdsVariable.isPurchase ? textPrimary : textMuted,
+                              ),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                suffixIcon: !AdsVariable.isPurchase
+                                    ? Icon(Icons.lock_outline_rounded, size: 14.sp, color: primaryColor)
+                                    : null,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
 
                     SizedBox(height: 12.h),

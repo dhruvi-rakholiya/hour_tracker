@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/controllers/timer_controller.dart';
+import 'package:hour_tracker/for_ads/ads/app_open_ad.dart';
+import 'package:hour_tracker/for_ads/ads/life_cycle.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 
 class FocusModeScreen extends StatefulWidget {
@@ -17,7 +19,14 @@ class FocusModeScreen extends StatefulWidget {
 
 class _FocusModeScreenState extends State<FocusModeScreen> {
   @override
+  void initState() {
+    super.initState();
+    AppLifecycleReactor.isAppOpenSuppressed = true;
+  }
+
+  @override
   void dispose() {
+    AppLifecycleReactor.isAppOpenSuppressed = false;
     // Reset orientation on exit
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,

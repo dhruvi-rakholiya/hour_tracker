@@ -8,6 +8,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 /// Listens for app foreground events and shows app open ads.
 class AppLifecycleReactor {
   final AppOpenAdManager appOpenAdManager;
+  static bool isAppOpenSuppressed = false;
 
   AppLifecycleReactor({required this.appOpenAdManager});
 
@@ -18,16 +19,20 @@ class AppLifecycleReactor {
     AppStateEventNotifier.appStateStream.forEach((state) {
       showLog("AppLifecycleReactor Should Show $shouldShow");
       showLog("State is ${state}");
-      if (shouldShow && !AdsVariable.isPurchase) {
+      if (shouldShow && !AdsVariable.isPurchase && !isAppOpenSuppressed) {
         onAppStateChanged(state);
       } else {
-        showLog("NOT SHOW");
+        showLog("NOT SHOW (Suppressed: $isAppOpenSuppressed)");
       }
     });
   }
 
   void onAppStateChanged(AppState appState) {
     showLog("In ON APP STATE CHANGED");
+    if (isAppOpenSuppressed || AdsVariable.isPurchase) {
+      showLog("AppOpen Ad Suppressed on Current Screen/Tab");
+      return;
+    }
     if (appState == AppState.foreground) {
       debugPrint("App State :- $appState");
       showLog('FOREGROUND');

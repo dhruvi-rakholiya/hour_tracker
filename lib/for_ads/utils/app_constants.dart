@@ -12,9 +12,9 @@ showLog(String msg) {
 const appleApiKey = 'appl_uvLFxdhFsRFDYStldCxjuEefSoJ';
 
 //TO DO: add the Google API key for your app from the RevenueCat dashboard: https://app.revenuecat.com
-const googleApiKey = 'goog_MeRIXtRSQQrkHTIxcgACYGqQKcQ';
+const googleApiKey = 'goog_HPKOPYmcSujDUgKtzFpydbwzqDF';
 
 //TO DO: add the Amazon API key for your app from the RevenueCat dashboard: https://app.revenuecat.com
 const amazonApiKey = '';
 
-const entitlementKey = "AndroidFishingSpotProAccess";
+const entitlementKey = "testforallapplication";

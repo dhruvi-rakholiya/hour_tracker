@@ -4,6 +4,7 @@ import 'package:hour_tracker/controllers/settings_controller.dart';
 import 'package:hour_tracker/models/time_entry_model.dart';
 import 'package:hour_tracker/services/database_service.dart';
 import 'package:hour_tracker/utils/app_show_toast.dart';
+import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
 
 class TimeEntryController extends GetxController {
   List<TimeEntryModel> allEntries = [];
@@ -62,6 +63,9 @@ class TimeEntryController extends GetxController {
   }
 
   double getOvertimeMultiplier() {
+    if (!AdsVariable.isPurchase) {
+      return 1.0;
+    }
     if (Get.isRegistered<SettingsController>()) {
       return Get.find<SettingsController>().settings.overtimeMultiplier;
     }

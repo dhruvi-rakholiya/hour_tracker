@@ -8,6 +8,7 @@ import 'package:hour_tracker/models/time_entry_model.dart';
 import 'package:hour_tracker/services/notification_service.dart';
 import 'package:hour_tracker/services/shared_preference_service.dart';
 import 'package:hour_tracker/utils/app_show_toast.dart';
+import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
 
 class TimerController extends GetxController {
   Timer? _timer;
@@ -97,9 +98,13 @@ class TimerController extends GetxController {
     elapsedSeconds = totalDiff > breakSeconds ? totalDiff - breakSeconds : 0;
   }
 
-  void setProject(ProjectModel project) {
+  void setProject(ProjectModel? project) {
     selectedProject = project;
-    currentHourlyRate = project.hourlyRate;
+    if (project != null) {
+      currentHourlyRate = project.hourlyRate;
+    } else {
+      currentHourlyRate = 35.0;
+    }
     update();
   }
 
@@ -147,11 +152,9 @@ class TimerController extends GetxController {
       isRunning = true;
       isPaused = false;
 
-      // Bind current project if available
-      final projectCtrl = Get.find<ProjectController>();
-      if (selectedProject == null && projectCtrl.projects.isNotEmpty) {
-        selectedProject = projectCtrl.selectedProject ?? projectCtrl.projects.first;
-        currentHourlyRate = selectedProject?.hourlyRate ?? 0.0;
+      // Default rate if not set
+      if (currentHourlyRate == 0.0) {
+        currentHourlyRate = selectedProject?.hourlyRate ?? 35.0;
       }
 
       SharedPrefService.sharedPreferences.setBool(keyIsRunning, true);
@@ -214,7 +217,7 @@ class TimerController extends GetxController {
       hourlyRate: currentHourlyRate,
       isBillable: isBillable,
       isOvertime: false,
-      overtimeMultiplier: settings.overtimeMultiplier,
+      overtimeMultiplier: AdsVariable.isPurchase ? settings.overtimeMultiplier : 1.0,
       notes: notes,
     );
 
@@ -287,6 +290,7 @@ class TimerController extends GetxController {
   }
 
   bool get isOvertimeActive {
+    if (!AdsVariable.isPurchase) return false;
     if (!isRunning) return false;
     double dailyGoal = 8.0;
     if (Get.isRegistered<SettingsController>()) {
@@ -311,7 +315,11 @@ class TimerController extends GetxController {
     if (!isBillable) return 0.0;
 
     double dailyGoal = 8.0;
-    double multiplier = 1.5;
+    double multiplier = AdsVariable.isPurchase
+        ? (Get.isRegistered<SettingsController>()
+            ? Get.find<SettingsController>().settings.overtimeMultiplier
+            : 1.5)
+        : 1.0;
     if (Get.isRegistered<SettingsController>()) {
       final s = Get.find<SettingsController>().settings;
       dailyGoal = s.dailyTargetHours;
