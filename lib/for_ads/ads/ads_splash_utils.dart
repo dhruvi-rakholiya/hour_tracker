@@ -64,8 +64,8 @@ class AdsSplashUtils {
         Map<String, dynamic> mapValues1 = {};
 
         if (Platform.isAndroid) {
-          log("Map is ${remoteConfig.getValue("hour_tracker").asString()}");
-          mapValues1 = jsonDecode(remoteConfig.getValue("hour_tracker").asString());
+          log("Map is ${remoteConfig.getValue("hour_metric_v1").asString()}");
+          mapValues1 = jsonDecode(remoteConfig.getValue("hour_metric_v1").asString());
           print(mapValues1);
         } else {
           log("Map is ${remoteConfig.getValue("hour_tracker").asString()}");

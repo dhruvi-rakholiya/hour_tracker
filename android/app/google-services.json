@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "886633614683",
-    "project_id": "hour-tracker-25ef5",
-    "storage_bucket": "hour-tracker-25ef5.firebasestorage.app"
+    "project_number": "565792355503",
+    "project_id": "hour-metric",
+    "storage_bucket": "hour-metric.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:886633614683:android:977a7b323205624fcede7e",
+        "mobilesdk_app_id": "1:565792355503:android:cc542d4113d1f95869105a",
         "android_client_info": {
-          "package_name": "flut.testingapps.forallplans"
+          "package_name": "com.hourmetric.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCd8oiSmcivtKPNxq7iMEC-5u1GWEE69lo"
+          "current_key": "AIzaSyCt_NbYNc_bCKCpsWViVXxm80Lb6UMKHV0"
         }
       ],
       "services": {
