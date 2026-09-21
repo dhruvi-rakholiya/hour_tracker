@@ -1,33 +1,72 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hour_tracker/screens/privacy_policy_screen.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/screens/premium_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
-import 'package:hour_tracker/utils/app_strings.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
-  void _shareApp() {
-    Share.share(
-      'Track your work hours, calculate earnings & export PDF reports effortlessly with ${AppStrings.appName}! Download now.',
-    );
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  String iosAppId = "";
+
+  void shareAppOnTap() async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final String packageName = packageInfo.packageName;
+    print(packageName);
+    if (Platform.isIOS) {
+      final String url = 'https://apps.apple.com/app/id$iosAppId';
+
+      final params = ShareParams(uri: Uri.parse(url));
+
+      await SharePlus.instance.share(params);
+    } else {
+      final String webUrl =
+          'https://play.google.com/store/apps/details?id=$packageName';
+      final params = ShareParams(uri: Uri.parse(webUrl));
+
+      await SharePlus.instance.share(params);
+    }
   }
 
-  Future<void> _rateApp(BuildContext context) async {
-    try {
-      final InAppReview inAppReview = InAppReview.instance;
-      if (await inAppReview.isAvailable()) {
-        await inAppReview.requestReview();
-      } else {
-        _showRateDialog(context);
+  Future<void> submitRating(BuildContext context) async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final String packageName = packageInfo.packageName;
+    print(packageName);
+    if (Platform.isIOS) {
+      try {
+        String appId = iosAppId;
+        final InAppReview inAppReview = InAppReview.instance;
+        await inAppReview.openStoreListing(appStoreId: appId);
+      } catch (e) {
+        print('Error requesting in-app review: $e');
       }
-    } catch (_) {
-      _showRateDialog(context);
+    } else {
+      final String url = 'market://details?id=$packageName';
+      if (await canLaunchUrl(Uri.parse(url))) {
+        await launchUrl(Uri.parse(url));
+      } else {
+        final String webUrl =
+            'https://play.google.com/store/apps/details?id=$packageName';
+        if (await canLaunchUrl(Uri.parse(webUrl))) {
+          await launchUrl(Uri.parse(webUrl));
+        } else {
+          throw 'Could not launch Play Store.';
+        }
+      }
     }
   }
 
@@ -103,10 +142,7 @@ class SettingsScreen extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Get.back(),
-                  child: const CustomAppText(
-                    text: "Later",
-                    color: textMuted,
-                  ),
+                  child: const CustomAppText(text: "Later", color: textMuted),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -139,142 +175,6 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showPrivacyPolicy(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: cardBgColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-      ),
-      builder: (context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.75,
-          maxChildSize: 0.9,
-          minChildSize: 0.5,
-          builder: (context, scrollController) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40.w,
-                      height: 4.h,
-                      decoration: BoxDecoration(
-                        color: dividerColor,
-                        borderRadius: BorderRadius.circular(4.r),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.privacy_tip_rounded,
-                            color: primaryColor,
-                            size: 22.sp,
-                          ),
-                          SizedBox(width: 8.w),
-                          CustomAppText(
-                            text: "Privacy Policy",
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimary,
-                          ),
-                        ],
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close_rounded, color: textMuted),
-                        onPressed: () => Get.back(),
-                      ),
-                    ],
-                  ),
-                  Divider(height: 20.h, color: dividerColor),
-                  Expanded(
-                    child: ListView(
-                      controller: scrollController,
-                      children: [
-                        CustomAppText(
-                          text: "Your Privacy Matters",
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
-                        SizedBox(height: 8.h),
-                        CustomAppText(
-                          text:
-                              "Hour Tracker values your privacy above all else. This application operates with an offline-first architecture to ensure your data stays safe and secure on your local device.",
-                          fontSize: 13.sp,
-                          color: textSecondary,
-                        ),
-                        SizedBox(height: 16.h),
-                        CustomAppText(
-                          text: "1. Data Collection & Storage",
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
-                        SizedBox(height: 6.h),
-                        CustomAppText(
-                          text:
-                              "All project details, work shifts, duration logs, and hourly rate calculations are stored locally in SQLite on your device. No personal time log data is uploaded to external servers.",
-                          fontSize: 12.5.sp,
-                          color: textSecondary,
-                        ),
-                        SizedBox(height: 16.h),
-                        CustomAppText(
-                          text: "2. Advertising & Analytics",
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
-                        SizedBox(height: 6.h),
-                        CustomAppText(
-                          text:
-                              "We use Google AdMob to deliver banner and interstitial advertisements. Non-identifiable device identifiers may be processed in compliance with GDPR and App Tracking Transparency guidelines to optimize ad performance.",
-                          fontSize: 12.5.sp,
-                          color: textSecondary,
-                        ),
-                        SizedBox(height: 16.h),
-                        CustomAppText(
-                          text: "3. In-App Purchases",
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
-                        SizedBox(height: 6.h),
-                        CustomAppText(
-                          text:
-                              "Subscribing to Hour Tracker PRO unlocks an ad-free environment and PDF export features. Store transactions are securely handled by Apple App Store and Google Play Store payment systems.",
-                          fontSize: 12.5.sp,
-                          color: textSecondary,
-                        ),
-                        SizedBox(height: 24.h),
-                        Center(
-                          child: CustomAppText(
-                            text: "Last Updated: August 2026 • Hour Tracker Team",
-                            fontSize: 11.sp,
-                            color: textMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -284,7 +184,11 @@ class SettingsScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary, size: 18.sp),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: textPrimary,
+            size: 18.sp,
+          ),
           onPressed: () => Get.back(),
         ),
         title: CustomAppText(
@@ -344,7 +248,10 @@ class SettingsScreen extends StatelessWidget {
                               ),
                             ),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10.w,
+                                vertical: 4.h,
+                              ),
                               decoration: BoxDecoration(
                                 color: white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(12.r),
@@ -367,14 +274,18 @@ class SettingsScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 4.h),
                         CustomAppText(
-                          text: "Unlock 100% ad-free experience, unlimited PDF report exports & advanced overtime calculator rules.",
+                          text:
+                              "Unlock 100% ad-free experience, unlimited PDF report exports & advanced overtime calculator rules.",
                           fontSize: 12.sp,
                           color: white.withValues(alpha: 0.92),
                           maxLines: 2,
                         ),
                         SizedBox(height: 16.h),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 14.w,
+                            vertical: 8.h,
+                          ),
                           decoration: BoxDecoration(
                             color: white,
                             borderRadius: BorderRadius.circular(12.r),
@@ -431,8 +342,9 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.share_rounded,
                     iconColor: primaryColor,
                     title: "Share App",
-                    subtitle: "Tell your colleagues and friends about Hour Tracker",
-                    onTap: _shareApp,
+                    subtitle:
+                        "Tell your colleagues and friends about Hour Tracker",
+                    onTap: shareAppOnTap,
                   ),
 
                   Divider(height: 1.h, color: dividerColor, indent: 56.w),
@@ -443,7 +355,9 @@ class SettingsScreen extends StatelessWidget {
                     iconColor: Colors.amber,
                     title: "Rate App",
                     subtitle: "Leave a rating or review on the App Store",
-                    onTap: () => _rateApp(context),
+                    onTap: () {
+                      submitRating(context);
+                    },
                   ),
 
                   Divider(height: 1.h, color: dividerColor, indent: 56.w),
@@ -454,62 +368,15 @@ class SettingsScreen extends StatelessWidget {
                     iconColor: billableColor,
                     title: "Privacy Policy",
                     subtitle: "Read how your data & privacy are protected",
-                    onTap: () => _showPrivacyPolicy(context),
+                    onTap: () {
+                      Get.to(() => PrivacyPolicyScreen());
+                    },
                   ),
                 ],
               ),
             ),
 
             SizedBox(height: 24.h),
-
-            // App Version Info Card
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16.r),
-              decoration: BoxDecoration(
-                color: cardBgColor,
-                borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: primaryColor.withValues(alpha: 0.15)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(10.r),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Icon(
-                      Icons.info_outline_rounded,
-                      color: primaryColor,
-                      size: 20.sp,
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomAppText(
-                          text: AppStrings.appName,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
-                        SizedBox(height: 2.h),
-                        CustomAppText(
-                          text: "Version 1.0.0 (Build 1) • Premium Edition",
-                          fontSize: 11.sp,
-                          color: textSecondary,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 40.h),
           ],
         ),
       ),
@@ -535,11 +402,7 @@ class SettingsScreen extends StatelessWidget {
                 color: iconColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: 20.sp,
-              ),
+              child: Icon(icon, color: iconColor, size: 20.sp),
             ),
             SizedBox(width: 14.w),
             Expanded(

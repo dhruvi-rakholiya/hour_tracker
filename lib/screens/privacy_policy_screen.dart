@@ -29,7 +29,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
           ..enableZoom(true)
           ..loadRequest(
             Uri.parse(
-              'https://nidhirola.blogspot.com/2025/01/privacy-policy.html',
+              'https://hourmetric-privacy.avenorlysystems.workers.dev/',
             ),
           )
           ..setNavigationDelegate(
@@ -61,7 +61,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
           )
           ..loadRequest(
             Uri.parse(
-              'https://nidhirola.blogspot.com/2025/01/privacy-policy.html',
+              'https://hourmetric-privacy.avenorlysystems.workers.dev/',
             ),
           );
       }
