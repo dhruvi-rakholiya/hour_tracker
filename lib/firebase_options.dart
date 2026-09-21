@@ -50,12 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCd8oiSmcivtKPNxq7iMEC-5u1GWEE69lo',
-    appId: '1:886633614683:android:977a7b323205624fcede7e',
-    messagingSenderId: '886633614683',
-    projectId: 'hour-tracker-25ef5',
-    storageBucket: 'hour-tracker-25ef5.firebasestorage.app',
+    apiKey: 'AIzaSyDhBOmS2v_pO8N6LlH3GDsN3b0bAUEhFEA',
+    appId: '1:610712632309:android:4731ccdf3521e146277ebc',
+    messagingSenderId: '610712632309',
+    projectId: 'hour-metrics',
+    storageBucket: 'hour-metrics.firebasestorage.app',
   );
+
+  // static const FirebaseOptions android = FirebaseOptions(
+  //   apiKey: 'AIzaSyCd8oiSmcivtKPNxq7iMEC-5u1GWEE69lo',
+  //   appId: '1:886633614683:android:977a7b323205624fcede7e',
+  //   messagingSenderId: '886633614683',
+  //   projectId: 'hour-tracker-25ef5',
+  //   storageBucket: 'hour-tracker-25ef5.firebasestorage.app',
+  // );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAjTQsp4q87zrKkix4KH4Mp7DBTZy7KiJY',

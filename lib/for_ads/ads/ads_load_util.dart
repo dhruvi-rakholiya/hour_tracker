@@ -20,13 +20,13 @@ class AdsLoadUtil extends GetxController {
   late AppLifecycleReactor appLifecycleReactor;
 
   /// --------- load open ads -----------------------------------------------------
-  loadAppOpenSplash(Function() navigateScreen) async {
+  Future<void> loadAppOpenSplash(Function() navigateScreen) async {
     AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd(AdsVariable.appOpenAdsIOS);
     appLifecycleReactor = AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
     AppLifecycleReactor(appOpenAdManager: appOpenAdManager).listenToAppStateChanges();
   }
 
-  loadAppOpen() async {
+  Future<void> loadAppOpen() async {
     AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd(AdsVariable.appOpenAdsIOS);
     appLifecycleReactor = AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
     AppLifecycleReactor(appOpenAdManager: appOpenAdManager).listenToAppStateChanges();
@@ -84,7 +84,7 @@ class AdsLoadUtil extends GetxController {
   InterstitialAd? splashInterAd;
 
   /// -------------------- Splash inter loading ------------------------
-  loadInterSplash(Function() navigateScreen, String adUnitId) async {
+  Future<void> loadInterSplash(Function() navigateScreen, String adUnitId) async {
     prefs = await SharedPreferences.getInstance();
     showLog('>> SHOW INTER CALL <<');
     showLog('AdsVariable.interSplashIOS >>${AdsVariable.interSplashIOS}');
@@ -162,7 +162,7 @@ class AdsLoadUtil extends GetxController {
   static String interstitialId = "";
   static bool isAdLoaded = false;
 
-  static loadPreInterstitialAd({required String adId}) {
+  static void loadPreInterstitialAd({required String adId}) {
     interstitialId = adId;
     if (_interstitialAd != null) {
       _interstitialAd!.dispose();
@@ -186,7 +186,7 @@ class AdsLoadUtil extends GetxController {
   }
 
   static void showInterstitial({required Function onDismissed, bool isShowLoading = true}) {
-    print('isShowLoading-->$isShowLoading');
+    showLog('isShowLoading-->$isShowLoading');
 
     if (AdsVariable.isPurchase || AdsVariable.interPreLoadIOS.startsWith('v', 0)) {
       onDismissed();
@@ -253,7 +253,7 @@ class AdsLoadUtil extends GetxController {
         );
       }
     } else {
-      print('get here in else');
+      showLog('get here in else');
       loadAndShow(adId: AdsVariable.interPreLoadIOS, onDismissed: onDismissed);
     }
   }

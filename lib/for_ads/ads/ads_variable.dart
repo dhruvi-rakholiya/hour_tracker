@@ -4,6 +4,8 @@ import 'package:hour_tracker/for_ads/ads/ads_load_util.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+import '../utils/app_constants.dart';
+
 class AdsVariable {
   static bool? openAdInSplash;
   static AppOpenAd? appOpenAd;
@@ -76,7 +78,7 @@ class AdsVariable {
   static String bannerProjectsIOS = "11";
 
   static Future<void> onShowAds(BuildContext context, {required Function onComplete, bool isShowLoadingScreen = true}) async {
-    print('isShowLoadingScreen -->$isShowLoadingScreen');
+    showLog('isShowLoadingScreen -->$isShowLoadingScreen');
 
     if (AdsVariable.isPurchase) {
       onComplete();

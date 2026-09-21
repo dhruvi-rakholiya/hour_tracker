@@ -1,4 +1,4 @@
-package flut.testingapps.forallplans
+package com.hourmetric.app
 
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable

@@ -13,6 +13,8 @@ import 'package:hour_tracker/services/shared_preference_service.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+import 'for_ads/utils/app_constants.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -45,17 +47,17 @@ Future<void> configureSDK() async {
 
     final offerings = await Purchases.getOfferings();
     if (offerings.current != null) {
-      print('✅ Offering found: ${offerings.current!.identifier}');
+      showLog('✅ Offering found: ${offerings.current!.identifier}');
       for (final pkg in offerings.current!.availablePackages) {
-        print('👉 Package: ${pkg.identifier}');
-        print('👉 Product: ${pkg.storeProduct.identifier}');
+        showLog('👉 Package: ${pkg.identifier}');
+        showLog('👉 Product: ${pkg.storeProduct.identifier}');
       }
     } else {
-      print('⚠️ No current offering found');
+      showLog('⚠️ No current offering found');
     }
   } catch (e, st) {
-    print('❌ Error configuring SDK or fetching offerings: $e');
-    print(st);
+    showLog('❌ Error configuring SDK or fetching offerings: $e');
+    showLog(st);
   }
 }
 

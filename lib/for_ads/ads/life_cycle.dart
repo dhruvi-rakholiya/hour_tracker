@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:hour_tracker/for_ads/ads/ads_load_util.dart';
 import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
 import 'package:hour_tracker/for_ads/ads/app_open_ad.dart';
@@ -18,7 +17,7 @@ class AppLifecycleReactor {
     AppStateEventNotifier.startListening();
     AppStateEventNotifier.appStateStream.forEach((state) {
       showLog("AppLifecycleReactor Should Show $shouldShow");
-      showLog("State is ${state}");
+      showLog("State is $state");
       if (shouldShow && !AdsVariable.isPurchase && !isAppOpenSuppressed) {
         onAppStateChanged(state);
       } else {
@@ -34,12 +33,12 @@ class AppLifecycleReactor {
       return;
     }
     if (appState == AppState.foreground) {
-      debugPrint("App State :- $appState");
+      showLog("App State :- $appState");
       showLog('FOREGROUND');
 
       appOpenAdManager.showAdIfAvailable(AdsVariable.appOpenAdsIOS);
     } else if (appState == AppState.background) {
-      print(AdsVariable.appOpenAdsIOS);
+      showLog(AdsVariable.appOpenAdsIOS);
 
       ///TODO: CHANGES
       showLog('BACKGROUND');

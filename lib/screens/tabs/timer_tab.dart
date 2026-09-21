@@ -5,8 +5,6 @@ import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/controllers/project_controller.dart';
 import 'package:hour_tracker/controllers/timer_controller.dart';
-import 'package:hour_tracker/for_ads/ads/app_open_ad.dart';
-import 'package:hour_tracker/for_ads/ads/life_cycle.dart';
 import 'package:hour_tracker/models/project_model.dart';
 import 'package:hour_tracker/screens/add_edit_project_screen.dart';
 import 'package:hour_tracker/screens/focus_mode_screen.dart';
@@ -274,7 +272,7 @@ class _TimerTabState extends State<TimerTab> {
                         scale: 0.85,
                         child: Switch.adaptive(
                           value: timerCtrl.isFocusMode,
-                          activeColor: primaryColor,
+                          activeThumbColor: primaryColor,
                           onChanged: (val) {
                             timerCtrl.toggleFocusMode(val);
                             if (val) {

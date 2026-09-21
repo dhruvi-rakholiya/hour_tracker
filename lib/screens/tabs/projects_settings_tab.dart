@@ -639,7 +639,7 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                         ),
                         Switch(
                           value: _enableNotifications,
-                          activeColor: primaryColor,
+                          activeThumbColor: primaryColor,
                           onChanged: (val) {
                             setState(() {
                               _enableNotifications = val;

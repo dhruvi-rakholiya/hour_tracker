@@ -5,6 +5,8 @@ import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../utils/app_constants.dart';
+
 /// Utility class that manages loading and showing app open ads.
 class AppOpenAdManager {
   bool get isAdAvailable {
@@ -14,11 +16,9 @@ class AppOpenAdManager {
   /// Maximum duration allowed between loading and showing the ad.
   final Duration maxCacheDuration = const Duration(hours: 4);
 
-  /// Keep track of load time so we don't show an expired ad.
-  DateTime? _appOpenLoadTime;
 
   /// Load an AppOpenAd.
-  loadAd(addId) async {
+  Future<void> loadAd(String addId) async {
     if (AdsVariable.isPurchase) {
       return;
     }
@@ -27,12 +27,11 @@ class AppOpenAdManager {
       request: const AdRequest(),
       adLoadCallback: AppOpenAdLoadCallback(
         onAdLoaded: (ad) {
-          _appOpenLoadTime = DateTime.now();
           AdsVariable.appOpenAd = ad;
           log('${AdsVariable.appOpenAd} appOpen loaded');
         },
         onAdFailedToLoad: (error) {
-          print('AppOpenAd failed to load: $error');
+          showLog('AppOpenAd failed to load: $error');
         },
       ),
     );
@@ -41,7 +40,7 @@ class AppOpenAdManager {
   /// Shows the ad, if one exists and is not already being shown.
   /// If the previously cached ad has expired, this just loads and caches a
   /// new ad.
-  void showAdIfAvailable(adId) async {
+  void showAdIfAvailable(String adId) async {
     if (AdsVariable.isPurchase) {
       return;
     }
@@ -51,27 +50,27 @@ class AppOpenAdManager {
     }
     if (!isAdAvailable) {
       loadAd(adId);
-      print('Tried to show ad before available.');
+      showLog('Tried to show ad before available.');
       return;
     }
     if (AdsVariable.isShowingAd) {
-      print('Tried to show ad while already showing an ad.');
+      showLog('Tried to show ad while already showing an ad.');
       return;
     }
     // if (DateTime.now().subtract(maxCacheDuration).isAfter(_appOpenLoadTime!)) {
     //   loadAd(adId);
-    //   print('Maximum cache duration exceeded. Loading another ad.');
+    //   showLog('Maximum cache duration exceeded. Loading another ad.');
     //   return;
     // }
     AdsVariable.appOpenAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (ad) {
         AdsVariable.isShowingAd = true;
-        print('$ad onAdShowedFullScreenContent');
+        showLog('$ad onAdShowedFullScreenContent');
         log("FullScreenContentCallback");
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
         Get.back();
-        print('$ad onAdFailedToShowFullScreenContent: $error');
+        showLog('$ad onAdFailedToShowFullScreenContent: $error');
         AdsVariable.isShowingAd = false;
         ad.dispose();
         AdsVariable.appOpenAd = null;
@@ -81,7 +80,7 @@ class AppOpenAdManager {
       },
       onAdDismissedFullScreenContent: (ad) {
         Get.back();
-        print('$ad onAdDismissedFullScreenContent');
+        showLog('$ad onAdDismissedFullScreenContent');
         AdsVariable.isShowingAd = false;
         ad.dispose();
         AdsVariable.appOpenAd = null;

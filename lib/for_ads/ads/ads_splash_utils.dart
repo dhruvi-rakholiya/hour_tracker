@@ -22,7 +22,7 @@ class AdsSplashUtils {
   late SharedPreferences prefs;
 
   Future<void> getOnlineIds({required Function() navigateScreen}) async {
-    print("In Get Ads");
+    showLog("In Get Ads");
     prefs = await SharedPreferences.getInstance();
 
     /// IOS
@@ -66,11 +66,11 @@ class AdsSplashUtils {
         if (Platform.isAndroid) {
           log("Map is ${remoteConfig.getValue("hour_tracker").asString()}");
           mapValues1 = jsonDecode(remoteConfig.getValue("hour_tracker").asString());
-          print(mapValues1);
+          showLog(mapValues1);
         } else {
           log("Map is ${remoteConfig.getValue("hour_tracker").asString()}");
           mapValues1 = jsonDecode(remoteConfig.getValue("hour_tracker").asString());
-          print(mapValues1);
+          showLog(mapValues1);
         }
 
         /// IOS Id setup from Firebase Remote Config
@@ -178,7 +178,7 @@ class AdsSplashUtils {
 
         if (AdsVariable.isPurchase) {
           Future.delayed(const Duration(seconds: 3), () {
-            print('**call navigateScreen***');
+            showLog('**call navigateScreen***');
             navigateScreen();
           });
         }
@@ -194,10 +194,10 @@ class AdsSplashUtils {
 
         Future.delayed(const Duration(seconds: 0), () async {
           if (AdsVariable.openAdInSplash!) {
-            print('call open ad in splash condition');
+            showLog('call open ad in splash condition');
             AdsLoadUtil().loadAndShowOpenAd(navigateScreen, AdsVariable.appOpenAdsIOS);
           } else {
-            print('----call else part-----');
+            showLog('----call else part-----');
             AdsLoadUtil().loadInterSplash(navigateScreen, AdsVariable.interSplashIOS);
           }
         });
@@ -209,7 +209,7 @@ class AdsSplashUtils {
         navigateScreen();
       }
     } else {
-      print("Not Connected");
+      showLog("Not Connected");
       navigateScreen();
     }
   }
@@ -350,11 +350,11 @@ Future<TrackingStatus> initializeWithOutGDPR() async {
   AppTrackingTransparency.requestTrackingAuthorization().then((value) async {
     final status = await AppTrackingTransparency.trackingAuthorizationStatus;
     if (status == TrackingStatus.authorized) {
-      print("GDPR: TrackingStatus.required");
+      showLog("GDPR: TrackingStatus.required");
       await initializeMobileAds();
       completer.complete(TrackingStatus.authorized);
     } else {
-      print("GDPR: TrackingStatus Not Required");
+      showLog("GDPR: TrackingStatus Not Required");
       await initializeMobileAds();
       completer.complete(TrackingStatus.denied);
     }

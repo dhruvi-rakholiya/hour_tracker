@@ -10,7 +10,6 @@ import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/firebase_analysis.dart';
 import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
-import 'package:hour_tracker/for_ads/ads/app_open_ad.dart';
 import 'package:hour_tracker/for_ads/ads/life_cycle.dart';
 import 'package:hour_tracker/for_ads/utils/app_constants.dart';
 import 'package:hour_tracker/screens/privacy_policy_screen.dart';
@@ -57,7 +56,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
     super.dispose();
   }
 
-  void _onSubscribe() {
+  /*void _onSubscribe() {
     AdsVariable.isPurchase = true;
     Get.snackbar(
       "PRO Activated!",
@@ -68,7 +67,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
       margin: EdgeInsets.all(16.r),
     );
     Get.back();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -381,18 +380,18 @@ class _PremiumScreenState extends State<PremiumScreen> {
         if(planType == PremiumPlanType.yearly){
           selectedPackage = AdsVariable.availablePackages?.values.where((test) {
             if (Platform.isIOS) {
-              return test.storeProduct.identifier == "nsr.aienhancer.com.annualplan";
+              return test.storeProduct.identifier == yearlyPlanIdentifierIos;
             } else {
-              return test.storeProduct.identifier == "yearlysub:yearlysub";
+              return test.storeProduct.identifier == yearlyPlanIdentifierAndroid;
             }
           }).first;
           log('selectedPackage-------->$selectedPackage');
         }else{
           selectedPackage = AdsVariable.availablePackages?.values.where((test) {
             if (Platform.isIOS) {
-              return test.storeProduct.identifier == "nsr.aienhancer.com.annualplan";
+              return test.storeProduct.identifier == weeklyPlanIdentifierIos;
             } else {
-              return test.storeProduct.identifier == "weeklysubscription:weeklysubscription";
+              return test.storeProduct.identifier == weeklyPlanIdentifierAndroid;
             }
           }).first;
           log('selectedPackage-------->$selectedPackage');
@@ -506,9 +505,9 @@ class _PremiumScreenState extends State<PremiumScreen> {
       // selectedPackage = (AdsVariable.availablePackages?.entries ?? []).elementAt(1).value;
       selectedPackage = AdsVariable.availablePackages?.values.where((test) {
         if (Platform.isIOS) {
-          return test.storeProduct.identifier == 'nsr.aienhancer.com.annualplan';
+          return test.storeProduct.identifier == yearlyPlanIdentifierIos;
         } else {
-          return test.storeProduct.identifier == 'yearlysub:yearlysub';
+          return test.storeProduct.identifier == yearlyPlanIdentifierAndroid;
         }
       }).first;
       log("Default Main selectedPackage :- $selectedPackage");
@@ -520,15 +519,15 @@ class _PremiumScreenState extends State<PremiumScreen> {
     try {
       offerings = await Purchases.getOfferings();
       if (kDebugMode) {
-        print(offerings);
+        showLog(offerings);
       }
 
       AdsVariable.availablePackages = {
         for (var package in offerings.current?.availablePackages ?? []) package.identifier: package,
       };
-      print(AdsVariable.availablePackages);
+      showLog(AdsVariable.availablePackages);
       if (AdsVariable.availablePackages == null) {
-        print('no package avalible');
+        showLog('no package avalible');
       }
 
       log("availablePackages ********** ${AdsVariable.availablePackages}");
@@ -536,18 +535,18 @@ class _PremiumScreenState extends State<PremiumScreen> {
       if ((AdsVariable.availablePackages?.entries ?? []).length >= 2) {
         selectedPackage = AdsVariable.availablePackages?.values.where((test) {
           if (Platform.isIOS) {
-            return test.storeProduct.identifier == 'nsr.aienhancer.com.annualplan';
+            return test.storeProduct.identifier == yearlyPlanIdentifierIos;
           } else {
-            return test.storeProduct.identifier == 'yearlysub:yearlysub';
+            return test.storeProduct.identifier == yearlyPlanIdentifierAndroid;
           }
         }).first;
       }
     } on PlatformException catch (e) {
       if (AdsVariable.availablePackages == null) {
-        print('no package avalible');
+        showLog('no package avalible');
       }
       if (kDebugMode) {
-        print(e);
+        showLog(e);
       }
     }
   }
@@ -555,16 +554,16 @@ class _PremiumScreenState extends State<PremiumScreen> {
   void getPricePackage() {
     final weeklyPlan = AdsVariable.availablePackages?.values.where((test) {
       if (Platform.isIOS) {
-        return test.storeProduct.identifier == "nsr.aienhancer.com.weeklyplan";
+        return test.storeProduct.identifier == weeklyPlanIdentifierIos;
       } else {
-        return test.storeProduct.identifier == "weeklysubscription:weeklysubscription";
+        return test.storeProduct.identifier == weeklyPlanIdentifierAndroid;
       }
     });
     final yearlyPlan = AdsVariable.availablePackages?.values.where((test) {
       if (Platform.isIOS) {
-        return test.storeProduct.identifier == "nsr.aienhancer.com.annualplan";
+        return test.storeProduct.identifier == yearlyPlanIdentifierIos;
       } else {
-        return test.storeProduct.identifier == "yearlysub:yearlysub";
+        return test.storeProduct.identifier == yearlyPlanIdentifierAndroid;
       }
     });
 
@@ -600,30 +599,30 @@ class _PremiumScreenState extends State<PremiumScreen> {
     }
 
     discountPercentage = discountPlan2.toStringAsFixed(0);
-    print("Discount Percentage: $discountPercentage");
+    showLog("Discount Percentage: $discountPercentage");
   }
 
   void getPremiumVersion(BuildContext context) async {
     log("getPremiumVersion selectedPackage :- $selectedPackage");
 
     try {
-      final customerInfo = await Purchases.purchasePackage(selectedPackage!);
-      appData.entitlementIsActive = customerInfo.entitlements.all[entitlementKey]!.isActive;
+      final customerInfo = await Purchases.purchase(PurchaseParams.package(selectedPackage!));
+      appData.entitlementIsActive = customerInfo.customerInfo.entitlements.all[entitlementKey]!.isActive;
       initPlatformState(context);
     } on PlatformException catch (e) {
       // hideLoadingDialog();
       final errorCode = PurchasesErrorHelper.getErrorCode(e);
       if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
         if (kDebugMode) {
-          print('User cancelled');
+          showLog('User cancelled');
         }
       } else if (errorCode == PurchasesErrorCode.purchaseNotAllowedError) {
         if (kDebugMode) {
-          print('User not allowed to purchase');
+          showLog('User not allowed to purchase');
         }
       } else if (errorCode == PurchasesErrorCode.paymentPendingError) {
         if (kDebugMode) {
-          print('Payment is pending');
+          showLog('Payment is pending');
         }
       }
     } finally {

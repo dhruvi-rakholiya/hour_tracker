@@ -24,6 +24,7 @@ class SettingsScreen extends StatelessWidget {
       if (await inAppReview.isAvailable()) {
         await inAppReview.requestReview();
       } else {
+
         _showRateDialog(context);
       }
     } catch (_) {

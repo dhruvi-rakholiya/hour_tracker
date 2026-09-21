@@ -12,7 +12,7 @@ class LoadingScreen {
 
   LoadingScreen(this.globalKey);
 
-  show([String? text]) {
+  void show([String? text]) {
     showDialog<String>(
       context: Get.context!,
       builder: (BuildContext context) => Scaffold(
@@ -20,7 +20,7 @@ class LoadingScreen {
         body: Container(
           decoration: BoxDecoration(
             // borderRadius: BorderRadius.circular(15.w),
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
           ),
           child: Center(
             child: Column(
@@ -46,7 +46,7 @@ class LoadingScreen {
     );
   }
 
-  hide() {
+  void hide() {
     if (Get.context == null) return;
     Navigator.pop(Get.context!);
   }

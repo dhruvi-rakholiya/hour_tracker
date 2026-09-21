@@ -1,6 +1,8 @@
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 
+import 'for_ads/utils/app_constants.dart';
+
 class FirebaseAnalyticsService {
 
 
@@ -18,7 +20,7 @@ class FirebaseAnalyticsService {
         parameters: parameters,
       );
     } catch (e) {
-      print("Error logging event: $e");
+      showLog("Error logging event: $e");
     }
   }
 
@@ -34,7 +36,7 @@ class FirebaseAnalyticsService {
         value: value,
       );
     } catch (e) {
-      print("Error setting user property: $e");
+      showLog("Error setting user property: $e");
     }
   }
 
@@ -44,12 +46,12 @@ class FirebaseAnalyticsService {
     String screenClassOverride='',
   }) async {
     try {
-      await _analytics.setCurrentScreen(
+      await _analytics.logScreenView(
         screenName: screenName,
-        screenClassOverride: screenClassOverride,
+        screenClass: screenClassOverride
       );
     } catch (e) {
-      print("Error setting current screen: $e");
+      showLog("Error setting current screen: $e");
     }
   }
 
@@ -58,7 +60,7 @@ class FirebaseAnalyticsService {
     try {
       await _analytics.logAppOpen();
     } catch (e) {
-      print("Error logging app open: $e");
+      showLog("Error logging app open: $e");
     }
   }
 
@@ -69,7 +71,7 @@ class FirebaseAnalyticsService {
     try {
       await _analytics.logLogin(loginMethod: method);
     } catch (e) {
-      print("Error logging sign-in: $e");
+      showLog("Error logging sign-in: $e");
     }
   }
 
@@ -78,7 +80,7 @@ class FirebaseAnalyticsService {
     try {
       await logEvent(eventName: 'user_sign_out');
     } catch (e) {
-      print("Error logging sign-out: $e");
+      showLog("Error logging sign-out: $e");
     }
   }
 }

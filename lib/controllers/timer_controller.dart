@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:get/get.dart';
-import 'package:hour_tracker/controllers/project_controller.dart';
 import 'package:hour_tracker/controllers/settings_controller.dart';
 import 'package:hour_tracker/controllers/time_entry_controller.dart';
 import 'package:hour_tracker/models/project_model.dart';

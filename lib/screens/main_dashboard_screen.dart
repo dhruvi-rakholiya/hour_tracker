@@ -13,7 +13,6 @@ import 'package:hour_tracker/screens/tabs/reports_tab.dart';
 import 'package:hour_tracker/screens/tabs/timer_tab.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 
-import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
 import 'package:hour_tracker/for_ads/ads/life_cycle.dart';
 import 'package:hour_tracker/services/notification_service.dart';
 import 'package:upgrader/upgrader.dart';

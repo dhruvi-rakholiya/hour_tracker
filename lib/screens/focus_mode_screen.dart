@@ -1,12 +1,9 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/controllers/timer_controller.dart';
-import 'package:hour_tracker/for_ads/ads/app_open_ad.dart';
 import 'package:hour_tracker/for_ads/ads/life_cycle.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 

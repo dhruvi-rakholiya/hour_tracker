@@ -15,10 +15,11 @@ import 'package:hour_tracker/firebase_analysis.dart';
 import 'package:hour_tracker/for_ads/ads/ads_splash_utils.dart';
 import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
 import 'package:hour_tracker/screens/intro_screen.dart';
-import 'package:hour_tracker/screens/main_dashboard_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+
+import '../for_ads/utils/app_constants.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -39,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
       FirebaseAnalyticsService.logEvent(eventName: 'SPLASH_SCREEN');
       await AdsSplashUtils().getOnlineIds(
         navigateScreen: () async {
-          print('navigate screen');
+          showLog('navigate screen');
           fetchData();
           // Initialize GetX Controllers (without Rx/Obx)
           Get.put(SettingsController());
@@ -109,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> fetchData() async {
-    print("get price");
+    showLog("get price");
     Offerings? offerings;
     try {
       offerings = await Purchases.getOfferings();
@@ -144,7 +145,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if ((AdsVariable.availablePackages?.entries ?? []).length >= 2) {}
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        print("get error -->$e");
+        showLog("get error -->$e");
       }
     }
   }
