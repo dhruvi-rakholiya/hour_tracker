@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hour_tracker/for_ads/utils/app_constants.dart';
 import 'package:hour_tracker/screens/privacy_policy_screen.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -26,7 +27,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void shareAppOnTap() async {
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final String packageName = packageInfo.packageName;
-    print(packageName);
+    showLog(packageName);
     if (Platform.isIOS) {
       final String url = 'https://apps.apple.com/app/id$iosAppId';
 
@@ -45,14 +46,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> submitRating(BuildContext context) async {
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final String packageName = packageInfo.packageName;
-    print(packageName);
+    showLog(packageName);
     if (Platform.isIOS) {
       try {
         String appId = iosAppId;
         final InAppReview inAppReview = InAppReview.instance;
         await inAppReview.openStoreListing(appStoreId: appId);
       } catch (e) {
-        print('Error requesting in-app review: $e');
+        showLog('Error requesting in-app review: $e');
       }
     } else {
       final String url = 'market://details?id=$packageName';
@@ -70,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _showRateDialog(BuildContext context) {
+  /*void _showRateDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
@@ -173,7 +174,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         );
       },
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {

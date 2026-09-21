@@ -305,7 +305,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                         ),
                       ),
                       _buildFooterLink(
-                        "Google Services",
+                        "Google Subscription",
                         onTap: openSubscriptions,
                       ),
                     ],
@@ -610,6 +610,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
     try {
       final customerInfo = await Purchases.purchase(PurchaseParams.package(selectedPackage!));
       appData.entitlementIsActive = customerInfo.customerInfo.entitlements.all[entitlementKey]!.isActive;
+      if(!mounted) return;
       initPlatformState(context);
     } on PlatformException catch (e) {
       // hideLoadingDialog();
