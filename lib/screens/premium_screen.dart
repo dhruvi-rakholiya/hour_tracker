@@ -111,7 +111,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 14.w, vertical: 6.h),
                         decoration: BoxDecoration(
                           color: primaryColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16.r),
@@ -206,11 +207,14 @@ class _PremiumScreenState extends State<PremiumScreen> {
                     ),
                     child: Column(
                       children: [
-                        _buildFeatureRow(Icons.all_inclusive_rounded, "Unlimited Client Projects & Tasks"),
+                        _buildFeatureRow(Icons.all_inclusive_rounded,
+                            "Unlimited Client Projects & Tasks"),
                         SizedBox(height: 10.h),
-                        _buildFeatureRow(Icons.block_rounded, "100% Ad-Free Across All Screens"),
-                           SizedBox(height: 10.h),
-                        _buildFeatureRow(Icons.bolt_rounded, "Advanced Overtime & Custom Rates"),
+                        _buildFeatureRow(Icons.block_rounded,
+                            "100% Ad-Free Across All Screens"),
+                        SizedBox(height: 10.h),
+                        _buildFeatureRow(Icons.bolt_rounded,
+                            "Advanced Overtime & Custom Rates"),
                       ],
                     ),
                   ),
@@ -246,7 +250,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
                   // Subscribe Action Button (App Primary Gradient)
                   CustomOpacityWidget(
-                    onTap: (){
+                    onTap: () {
                       showLoadingDialog(context);
                       getPremiumVersion(context);
                     },
@@ -267,9 +271,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                           ),
                           SizedBox(width: 8.w),
                           CustomAppText(
-                            text: _selectedPlan == PremiumPlanType.yearly
-                                ? "START 3-DAY FREE TRIAL"
-                                : "SUBSCRIBE NOW • \$2.99",
+                            text: "SUBSCRIBE NOW",
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                             color: white,
@@ -281,12 +283,6 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
                   SizedBox(height: 8.h),
 
-                  CustomAppText(
-                    text: "Auto-renewable. Cancel anytime in App Store settings.",
-                    fontSize: 10.5.sp,
-                    color: textMuted,
-                    textAlign: TextAlign.center,
-                  ),
 
                   SizedBox(height: 10.h),
 
@@ -297,7 +293,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                       _buildFooterLink(
                         "Privacy Policy",
                         onTap: () {
-                          Get.to(()=>PrivacyPolicyScreen());
+                          Get.to(() => PrivacyPolicyScreen());
                         },
                       ),
                       Padding(
@@ -377,7 +373,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
         setState(() {
           _selectedPlan = planType;
         });
-        if(planType == PremiumPlanType.yearly){
+        if (planType == PremiumPlanType.yearly) {
           selectedPackage = AdsVariable.availablePackages?.values.where((test) {
             if (Platform.isIOS) {
               return test.storeProduct.identifier == yearlyPlanIdentifierIos;
@@ -386,7 +382,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
             }
           }).first;
           log('selectedPackage-------->$selectedPackage');
-        }else{
+        } else {
           selectedPackage = AdsVariable.availablePackages?.values.where((test) {
             if (Platform.isIOS) {
               return test.storeProduct.identifier == weeklyPlanIdentifierIos;
@@ -523,7 +519,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
       }
 
       AdsVariable.availablePackages = {
-        for (var package in offerings.current?.availablePackages ?? []) package.identifier: package,
+        for (var package in offerings.current?.availablePackages ?? []) package
+            .identifier: package,
       };
       showLog(AdsVariable.availablePackages);
       if (AdsVariable.availablePackages == null) {
@@ -568,8 +565,12 @@ class _PremiumScreenState extends State<PremiumScreen> {
     });
 
     // Safely extract price strings
-    weeklyPrice = weeklyPlan?.isNotEmpty == true ? weeklyPlan!.first.storeProduct.priceString : '₹25.00';
-    yearlyPrice = yearlyPlan?.isNotEmpty == true ? yearlyPlan!.first.storeProduct.priceString : '₹40.00';
+    weeklyPrice = weeklyPlan?.isNotEmpty == true
+        ? weeklyPlan!.first.storeProduct.priceString
+        : '₹25.00';
+    yearlyPrice = yearlyPlan?.isNotEmpty == true
+        ? yearlyPlan!.first.storeProduct.priceString
+        : '₹40.00';
 
     log("Raw weeklyPrice: $weeklyPrice");
     log("Raw yearlyPrice: $yearlyPrice");
@@ -595,7 +596,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
     double discountPlan2 = 0;
     if (fullYearFromWeekly > 0) {
-      discountPlan2 = ((fullYearFromWeekly - yearlyPrice2Value) / fullYearFromWeekly) * 100;
+      discountPlan2 =
+          ((fullYearFromWeekly - yearlyPrice2Value) / fullYearFromWeekly) * 100;
     }
 
     discountPercentage = discountPlan2.toStringAsFixed(0);
@@ -642,7 +644,6 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
       if (selectedPlan == 0) {
         FirebaseAnalyticsService.logEvent(eventName: 'YEAR_PLAN_PURCHASE');
-
       } else if (selectedPlan == 1) {
         FirebaseAnalyticsService.logEvent(eventName: 'WEEK_PLAN_PURCHASE');
       }
