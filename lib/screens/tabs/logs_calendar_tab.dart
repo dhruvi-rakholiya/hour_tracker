@@ -23,6 +23,7 @@ class LogsCalendarTab extends StatefulWidget {
 class _LogsCalendarTabState extends State<LogsCalendarTab> {
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
+  double _verticalDragDistance = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -37,53 +38,238 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
           body: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Calendar Card
-                Container(
-                  decoration: BoxDecoration(
-                    color: cardBgColor,
-                    borderRadius: BorderRadius.circular(20.r),
-                    boxShadow: [
-                      BoxShadow(color: shadowColor, blurRadius: 10.r, offset: const Offset(0, 4)),
+                // Screen Title Header
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: FittedBox(
+                            alignment: Alignment.centerLeft,
+                            fit: BoxFit.scaleDown,
+                            child: CustomAppText(
+                              text: "Work Logs & History",
+                              fontSize: 22.sp,
+                              fontWeight: FontWeight.bold,
+                              color: textPrimary,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      CustomOpacityWidget(
+                        onTap: () => Get.to(() => AddEditEntryScreen(initialDate: entryCtrl.selectedDate)),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                          decoration: BoxDecoration(
+                            color: primaryColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(10.r),
+                            border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.add_rounded, size: 16.sp, color: primaryColor),
+                              SizedBox(width: 3.w),
+                              CustomAppText(
+                                text: "Add Log",
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.bold,
+                                color: primaryColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                  child: TableCalendar(
-                    firstDay: DateTime(2020),
-                    lastDay: DateTime.now().add(const Duration(days: 365)),
-                    focusedDay: _focusedDay,
-                    calendarFormat: _calendarFormat,
-                    selectedDayPredicate: (day) => isSameDay(entryCtrl.selectedDate, day),
-                    onDaySelected: (selectedDay, focusedDay) {
-                      setState(() => _focusedDay = focusedDay);
-                      entryCtrl.filterEntriesForSelectedDate(selectedDay);
-                    },
-                    onFormatChanged: (format) {
-                      setState(() => _calendarFormat = format);
-                    },
-                    onPageChanged: (focusedDay) {
-                      _focusedDay = focusedDay;
-                    },
-                    calendarStyle: CalendarStyle(
-                      todayDecoration: BoxDecoration(
-                        color: primaryColor.withValues(alpha: 0.3),
-                        shape: BoxShape.circle,
-                      ),
-                      selectedDecoration: const BoxDecoration(
-                        color: primaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                      selectedTextStyle: const TextStyle(color: white, fontWeight: FontWeight.bold),
-                      todayTextStyle: const TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 12.h),
+
+                // Calendar Card with Smooth Drag down/up format conversion
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onVerticalDragStart: (_) {
+                    _verticalDragDistance = 0.0;
+                  },
+                  onVerticalDragUpdate: (details) {
+                    _verticalDragDistance += details.primaryDelta ?? 0.0;
+                  },
+                  onVerticalDragEnd: (details) {
+                    final velocity = details.primaryVelocity ?? 0.0;
+                    if (_verticalDragDistance > 25 || velocity > 150) {
+                      // Dragged downwards -> Expand format smoothly
+                      setState(() {
+                        if (_calendarFormat == CalendarFormat.week) {
+                          _calendarFormat = CalendarFormat.twoWeeks;
+                        } else if (_calendarFormat == CalendarFormat.twoWeeks) {
+                          _calendarFormat = CalendarFormat.month;
+                        }
+                      });
+                    } else if (_verticalDragDistance < -25 || velocity < -150) {
+                      // Dragged upwards -> Collapse format smoothly
+                      setState(() {
+                        if (_calendarFormat == CalendarFormat.month) {
+                          _calendarFormat = CalendarFormat.twoWeeks;
+                        } else if (_calendarFormat == CalendarFormat.twoWeeks) {
+                          _calendarFormat = CalendarFormat.week;
+                        }
+                      });
+                    }
+                    _verticalDragDistance = 0.0;
+                  },
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    padding: EdgeInsets.fromLTRB(10.w, 8.h, 10.w, 4.h),
+                    decoration: BoxDecoration(
+                      color: cardBgColor,
+                      borderRadius: BorderRadius.circular(20.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: shadowColor,
+                          blurRadius: 10.r,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    headerStyle: HeaderStyle(
-                      formatButtonVisible: true,
-                      titleCentered: true,
-                      formatButtonDecoration: BoxDecoration(
-                        color: primaryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      formatButtonTextStyle: TextStyle(color: primaryColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
-                      titleTextStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: textPrimary),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TableCalendar(
+                          firstDay: DateTime(2020),
+                          lastDay: DateTime.now().add(const Duration(days: 365)),
+                          focusedDay: _focusedDay,
+                          calendarFormat: _calendarFormat,
+                          availableGestures: AvailableGestures.horizontalSwipe,
+                          availableCalendarFormats: const {
+                            CalendarFormat.week: 'Week',
+                            CalendarFormat.twoWeeks: '2 Weeks',
+                            CalendarFormat.month: 'Month',
+                          },
+                          daysOfWeekHeight: 28.h,
+                          rowHeight: 46.h,
+                          selectedDayPredicate: (day) =>
+                              isSameDay(entryCtrl.selectedDate, day),
+                          onDaySelected: (selectedDay, focusedDay) {
+                            setState(() => _focusedDay = focusedDay);
+                            entryCtrl.filterEntriesForSelectedDate(selectedDay);
+                          },
+                          onFormatChanged: (format) {
+                            setState(() => _calendarFormat = format);
+                          },
+                          onPageChanged: (focusedDay) {
+                            _focusedDay = focusedDay;
+                          },
+                          daysOfWeekStyle: DaysOfWeekStyle(
+                            weekdayStyle: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              color: textSecondary,
+                            ),
+                            weekendStyle: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              color: textMuted,
+                            ),
+                          ),
+                          calendarStyle: CalendarStyle(
+                            todayDecoration: BoxDecoration(
+                              color: primaryColor.withValues(alpha: 0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            selectedDecoration: const BoxDecoration(
+                              color: primaryColor,
+                              shape: BoxShape.circle,
+                            ),
+                            selectedTextStyle: const TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            todayTextStyle: const TextStyle(
+                              color: primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          headerStyle: HeaderStyle(
+                            formatButtonVisible: true,
+                            formatButtonShowsNext: false,
+                            titleCentered: true,
+                            formatButtonDecoration: BoxDecoration(
+                              color: primaryColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            formatButtonTextStyle: TextStyle(
+                              color: primaryColor,
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            titleTextStyle: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                        // Drag indicator handle (Tap to toggle or drag down/up)
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onVerticalDragEnd: (details) {
+                            final velocity = details.primaryVelocity ?? 0.0;
+                            if (velocity > 50) {
+                              if (_calendarFormat == CalendarFormat.week) {
+                                setState(() =>
+                                    _calendarFormat = CalendarFormat.twoWeeks);
+                              } else if (_calendarFormat ==
+                                  CalendarFormat.twoWeeks) {
+                                setState(() =>
+                                    _calendarFormat = CalendarFormat.month);
+                              }
+                            } else if (velocity < -50) {
+                              if (_calendarFormat == CalendarFormat.month) {
+                                setState(() =>
+                                    _calendarFormat = CalendarFormat.twoWeeks);
+                              } else if (_calendarFormat ==
+                                  CalendarFormat.twoWeeks) {
+                                setState(() =>
+                                    _calendarFormat = CalendarFormat.week);
+                              }
+                            }
+                          },
+                          onTap: () {
+                            setState(() {
+                              if (_calendarFormat == CalendarFormat.week) {
+                                _calendarFormat = CalendarFormat.twoWeeks;
+                              } else if (_calendarFormat ==
+                                  CalendarFormat.twoWeeks) {
+                                _calendarFormat = CalendarFormat.month;
+                              } else {
+                                _calendarFormat = CalendarFormat.week;
+                              }
+                            });
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(vertical: 8.h),
+                            color: Colors.transparent,
+                            child: Center(
+                              child: Container(
+                                width: 38.w,
+                                height: 4.h,
+                                decoration: BoxDecoration(
+                                  color: textMuted.withValues(alpha: 0.35),
+                                  borderRadius: BorderRadius.circular(2.r),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -159,7 +345,7 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
                         CustomAppText(text: "No work logs recorded for this day", fontSize: 14.sp, color: textSecondary),
                         SizedBox(height: 16.h),
                         CustomOpacityWidget(
-                          onTap: () => Get.to(() => const AddEditEntryScreen()),
+                          onTap: () => Get.to(() => AddEditEntryScreen(initialDate: entryCtrl.selectedDate)),
                           child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                             decoration: BoxDecoration(
@@ -245,53 +431,61 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
                             SizedBox(height: 10.h),
 
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 CustomAppText(
                                   text: "${tf.format(entry.startTime)} - ${tf.format(entry.endTime)}",
                                   fontSize: 13.sp,
                                   color: textSecondary,
                                 ),
-                                Row(
-                                  children: [
-                                    if (entry.isOvertime) ...[
-                                      Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                                        decoration: BoxDecoration(
-                                          color: Colors.amber.withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(6.r),
-                                          border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.bolt_rounded, size: 12.sp, color: Colors.amber[800]),
-                                            SizedBox(width: 2.w),
-                                            CustomAppText(
-                                              text: "Overtime (${entry.overtimeMultiplier}x)",
-                                              fontSize: 11.sp,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.amber[900] ?? Colors.amber,
+                                SizedBox(width: 8.w),
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Wrap(
+                                      alignment: WrapAlignment.end,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      spacing: 6.w,
+                                      runSpacing: 4.h,
+                                      children: [
+                                        if (entry.isOvertime)
+                                          Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                            decoration: BoxDecoration(
+                                              color: Colors.amber.withValues(alpha: 0.15),
+                                              borderRadius: BorderRadius.circular(6.r),
+                                              border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
                                             ),
-                                          ],
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(Icons.bolt_rounded, size: 12.sp, color: Colors.amber[800]),
+                                                SizedBox(width: 2.w),
+                                                CustomAppText(
+                                                  text: "Overtime (${entry.overtimeMultiplier}x)",
+                                                  fontSize: 11.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.amber[900] ?? Colors.amber,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                          decoration: BoxDecoration(
+                                            color: (entry.isBillable ? billableColor : nonBillableColor).withValues(alpha: 0.12),
+                                            borderRadius: BorderRadius.circular(6.r),
+                                          ),
+                                          child: CustomAppText(
+                                            text: entry.isBillable ? "Billable" : "Non-Billable",
+                                            fontSize: 11.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: entry.isBillable ? billableColor : nonBillableColor,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(width: 6.w),
-                                    ],
-                                    Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                                      decoration: BoxDecoration(
-                                        color: (entry.isBillable ? billableColor : nonBillableColor).withValues(alpha: 0.12),
-                                        borderRadius: BorderRadius.circular(6.r),
-                                      ),
-                                      child: CustomAppText(
-                                        text: entry.isBillable ? "Billable" : "Non-Billable",
-                                        fontSize: 11.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: entry.isBillable ? billableColor : nonBillableColor,
-                                      ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -311,11 +505,16 @@ class _LogsCalendarTabState extends State<LogsCalendarTab> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                CustomAppText(
-                                  text: "Duration: ${entry.formattedDuration} (Break: ${entry.breakMinutes}m)",
-                                  fontSize: 12.sp,
-                                  color: textSecondary,
+                                Expanded(
+                                  child: CustomAppText(
+                                    text: "Duration: ${entry.formattedDuration} (Break: ${entry.breakMinutes}m)",
+                                    fontSize: 12.sp,
+                                    color: textSecondary,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
+                                SizedBox(width: 8.w),
                                 CustomAppText(
                                   text: "\$${entry.totalEarnings.toStringAsFixed(2)}",
                                   fontSize: 16.sp,

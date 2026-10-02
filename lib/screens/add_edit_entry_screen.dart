@@ -12,11 +12,14 @@ import 'package:hour_tracker/models/time_entry_model.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 import 'package:hour_tracker/utils/app_show_toast.dart';
+import 'package:hour_tracker/common_widgets/screen_app_bar_title.dart';
+import 'package:hour_tracker/utils/app_input_formatters.dart';
 
 class AddEditEntryScreen extends StatefulWidget {
   final TimeEntryModel? existingEntry;
+  final DateTime? initialDate;
 
-  const AddEditEntryScreen({super.key, this.existingEntry});
+  const AddEditEntryScreen({super.key, this.existingEntry, this.initialDate});
 
   @override
   State<AddEditEntryScreen> createState() => _AddEditEntryScreenState();
@@ -53,7 +56,7 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
       _rateCtrl.text = _hourlyRate.toStringAsFixed(0);
       _breakCtrl.text = _breakMinutes.toString();
     } else {
-      _selectedDate = DateTime.now();
+      _selectedDate = widget.initialDate ?? DateTime.now();
       _startTime = TimeOfDay(
         hour: DateTime.now().hour - 1,
         minute: DateTime.now().minute,
@@ -202,11 +205,8 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
             );
           },
         ),
-        title: CustomAppText(
+        title: ScreenAppBarTitle(
           text: isEditing ? AppStrings.editTimeEntry : AppStrings.addTimeEntry,
-          fontSize: 18.sp,
-          fontWeight: FontWeight.bold,
-          color: textPrimary,
         ),
         centerTitle: true,
       ),
@@ -589,7 +589,8 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                         width: 100.w,
                         child: TextField(
                           controller: _rateCtrl,
-                          keyboardType: TextInputType.number,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: [AppInputFormatters.rate()],
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             fontSize: 15.sp,
@@ -627,6 +628,7 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                         child: TextField(
                           controller: _breakCtrl,
                           keyboardType: TextInputType.number,
+                          inputFormatters: AppInputFormatters.minutes(),
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             fontSize: 15.sp,
@@ -713,6 +715,7 @@ class _AddEditEntryScreenState extends State<AddEditEntryScreen> {
                   TextField(
                     controller: _notesCtrl,
                     maxLines: 3,
+                    inputFormatters: AppInputFormatters.notes(),
                     style: TextStyle(fontSize: 14.sp, color: textPrimary),
                     decoration: InputDecoration(
                       hintText: "What did you work on?",

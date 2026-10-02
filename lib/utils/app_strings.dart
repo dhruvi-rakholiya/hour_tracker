@@ -1,5 +1,5 @@
 class AppStrings {
-  static const String appName = "Hour Tracker";
+  static const String appName = "Hour Metric";
   static const String dashboard = "Dashboard";
   static const String timer = "Timer";
   static const String logs = "Work Logs";

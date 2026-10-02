@@ -22,7 +22,7 @@ class AdsVariable {
   static bool isUpdateAvailable = false;
   static bool isForceUpdate = false;
   static String updateTitle = "Update Available 🚀";
-  static String updateMessage = "A new version of Hour Tracker is available with exciting new features and improvements. Please update your app!";
+  static String updateMessage = "A new version of Hour Metric is available with exciting new features and improvements. Please update your app!";
   static String updateUrl = "";
 
   static void resetAdIds() {

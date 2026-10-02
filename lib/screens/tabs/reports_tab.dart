@@ -52,11 +52,21 @@ class ReportsTab extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CustomAppText(
-                    text: "Analytics & Reports",
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.bold,
-                    color: textPrimary,
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 8.w),
+                      child: FittedBox(
+                        alignment: Alignment.centerLeft,
+                        fit: BoxFit.scaleDown,
+                        child: CustomAppText(
+                          text: "Analytics & Reports",
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.bold,
+                          color: textPrimary,
+                          maxLines: 1,
+                        ),
+                      ),
+                    ),
                   ),
                   CustomOpacityWidget(
                     onTap: reportCtrl.exportAndSharePdf,

@@ -11,6 +11,8 @@ import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 import 'package:hour_tracker/utils/app_premium_helper.dart';
 import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
+import 'package:hour_tracker/utils/app_input_formatters.dart';
+import 'package:hour_tracker/utils/app_show_toast.dart';
 
 class ProjectsSettingsTab extends StatefulWidget {
   const ProjectsSettingsTab({super.key});
@@ -48,13 +50,33 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
   }
 
   void _saveSettings() {
-    final settingsCtrl = Get.find<SettingsController>();
-    final daily = double.tryParse(_dailyTargetCtrl.text.trim()) ?? 8.0;
-    final thresh = double.tryParse(_overtimeThreshCtrl.text.trim()) ?? 8.0;
-    final mult = AdsVariable.isPurchase
-        ? (double.tryParse(_overtimeMultCtrl.text.trim()) ?? 1.5)
-        : 1.0;
+    FocusScope.of(context).unfocus();
+    final dailyStr = _dailyTargetCtrl.text.trim();
+    final daily = double.tryParse(dailyStr);
+    if (daily == null || daily <= 0 || daily > 24) {
+      showToast("Please enter a valid daily goal (0.1 to 24 hrs)");
+      return;
+    }
 
+    final threshStr = _overtimeThreshCtrl.text.trim();
+    final thresh = double.tryParse(threshStr);
+    if (thresh == null || thresh <= 0 || thresh > 24) {
+      showToast("Please enter a valid overtime threshold (0.1 to 24 hrs)");
+      return;
+    }
+
+    double mult = 1.0;
+    if (AdsVariable.isPurchase) {
+      final multStr = _overtimeMultCtrl.text.trim();
+      final parsedMult = double.tryParse(multStr);
+      if (parsedMult == null || parsedMult < 1.0 || parsedMult > 10.0) {
+        showToast("Please enter a valid overtime multiplier (1.0x to 10.0x)");
+        return;
+      }
+      mult = parsedMult;
+    }
+
+    final settingsCtrl = Get.find<SettingsController>();
     final newSettings = settingsCtrl.settings.copyWith(
       dailyTargetHours: daily,
       overtimeThresholdDaily: thresh,
@@ -63,6 +85,18 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
     );
 
     settingsCtrl.updateSettings(newSettings);
+
+    _dailyTargetCtrl.text = daily.truncateToDouble() == daily
+        ? daily.toStringAsFixed(0)
+        : daily.toString();
+    _overtimeThreshCtrl.text = thresh.truncateToDouble() == thresh
+        ? thresh.toStringAsFixed(0)
+        : thresh.toString();
+    if (AdsVariable.isPurchase) {
+      _overtimeMultCtrl.text = mult.toStringAsFixed(1);
+    }
+
+    showToast("Preferences saved successfully");
   }
 
   void _showAddTaskDialog(
@@ -87,6 +121,7 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
           content: TextField(
             controller: _taskInputCtrl,
             autofocus: true,
+            inputFormatters: AppInputFormatters.singleLineText(maxLength: 60),
             decoration: InputDecoration(
               hintText: "Task name (e.g., Code Review)",
               border: OutlineInputBorder(
@@ -131,11 +166,21 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomAppText(
-                text: "Projects & Options",
-                fontSize: 22.sp,
-                fontWeight: FontWeight.bold,
-                color: textPrimary,
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 8.w),
+                  child: FittedBox(
+                    alignment: Alignment.centerLeft,
+                    fit: BoxFit.scaleDown,
+                    child: CustomAppText(
+                      text: "Projects & Options",
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.bold,
+                      color: textPrimary,
+                      maxLines: 1,
+                    ),
+                  ),
+                ),
               ),
               CustomOpacityWidget(
                 onTap: () {
@@ -207,7 +252,7 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
           //             crossAxisAlignment: CrossAxisAlignment.start,
           //             children: [
           //               CustomAppText(
-          //                 text: "Upgrade to Hour Tracker PRO",
+          //                 text: "Upgrade to Hour Metric PRO",
           //                 fontSize: 14.sp,
           //                 fontWeight: FontWeight.bold,
           //                 color: white,
@@ -480,16 +525,24 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CustomAppText(
-                          text: AppStrings.dailyTarget,
-                          fontSize: 13.sp,
-                          color: textSecondary,
+                        Expanded(
+                          child: CustomAppText(
+                            text: AppStrings.dailyTarget,
+                            fontSize: 13.sp,
+                            color: textSecondary,
+                          ),
                         ),
+                        SizedBox(width: 8.w),
                         SizedBox(
-                          width: 80.w,
+                          width: 75.w,
                           child: TextField(
                             controller: _dailyTargetCtrl,
-                            keyboardType: TextInputType.number,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            inputFormatters: [
+                              AppInputFormatters.hour(maxHours: 24.0),
+                            ],
                             textAlign: TextAlign.right,
                             style: TextStyle(
                               fontSize: 14.sp,
@@ -498,6 +551,10 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                             ),
                             decoration: InputDecoration(
                               isDense: true,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 8.h,
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.r),
                               ),
@@ -513,16 +570,24 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CustomAppText(
-                          text: AppStrings.overtimeThreshold,
-                          fontSize: 13.sp,
-                          color: textSecondary,
+                        Expanded(
+                          child: CustomAppText(
+                            text: AppStrings.overtimeThreshold,
+                            fontSize: 13.sp,
+                            color: textSecondary,
+                          ),
                         ),
+                        SizedBox(width: 8.w),
                         SizedBox(
-                          width: 80.w,
+                          width: 75.w,
                           child: TextField(
                             controller: _overtimeThreshCtrl,
-                            keyboardType: TextInputType.number,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            inputFormatters: [
+                              AppInputFormatters.hour(maxHours: 24.0),
+                            ],
                             textAlign: TextAlign.right,
                             style: TextStyle(
                               fontSize: 14.sp,
@@ -531,6 +596,10 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                             ),
                             decoration: InputDecoration(
                               isDense: true,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 8.h,
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.r),
                               ),
@@ -552,57 +621,81 @@ class _ProjectsSettingsTabState extends State<ProjectsSettingsTab> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              CustomAppText(
-                                text: AppStrings.overtimeMultiplier,
-                                fontSize: 13.sp,
-                                color: textSecondary,
-                              ),
-                              if (!AdsVariable.isPurchase) ...[
-                                SizedBox(width: 6.w),
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                                  decoration: BoxDecoration(
-                                    gradient: primaryGradient,
-                                    borderRadius: BorderRadius.circular(6.r),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.lock_rounded, size: 10.sp, color: white),
-                                      SizedBox(width: 2.w),
-                                      CustomAppText(
-                                        text: "PRO",
-                                        fontSize: 9.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: white,
-                                      ),
-                                    ],
+                          Expanded(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: CustomAppText(
+                                    text: AppStrings.overtimeMultiplier,
+                                    fontSize: 13.sp,
+                                    color: textSecondary,
+                                    maxLines: 2,
                                   ),
                                 ),
+                                if (!AdsVariable.isPurchase) ...[
+                                  SizedBox(width: 6.w),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                                    decoration: BoxDecoration(
+                                      gradient: primaryGradient,
+                                      borderRadius: BorderRadius.circular(6.r),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.lock_rounded, size: 10.sp, color: white),
+                                        SizedBox(width: 2.w),
+                                        CustomAppText(
+                                          text: "PRO",
+                                          fontSize: 9.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: white,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
+                          SizedBox(width: 8.w),
                           SizedBox(
-                            width: 80.w,
+                            width: 75.w,
                             child: TextField(
                               controller: _overtimeMultCtrl,
                               enabled: AdsVariable.isPurchase,
                               readOnly: !AdsVariable.isPurchase,
-                              keyboardType: TextInputType.number,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
+                              inputFormatters: [
+                                AppInputFormatters.multiplier(),
+                              ],
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.bold,
-                                color: AdsVariable.isPurchase ? textPrimary : textMuted,
+                                color: AdsVariable.isPurchase
+                                    ? textPrimary
+                                    : textMuted,
                               ),
                               decoration: InputDecoration(
                                 isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 8.h,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8.r),
                                 ),
                                 suffixIcon: !AdsVariable.isPurchase
-                                    ? Icon(Icons.lock_outline_rounded, size: 14.sp, color: primaryColor)
+                                    ? Icon(
+                                      Icons.lock_outline_rounded,
+                                      size: 14.sp,
+                                      color: primaryColor,
+                                    )
                                     : null,
                               ),
                             ),

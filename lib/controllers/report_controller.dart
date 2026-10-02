@@ -353,7 +353,7 @@ class ReportController extends GetxController {
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.Text(
-                          "Hour Tracker Work Report",
+                          "Hour Metric Work Report",
                           style: pw.TextStyle(
                             fontSize: 22,
                             fontWeight: pw.FontWeight.bold,
@@ -573,7 +573,7 @@ class ReportController extends GetxController {
       await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path)],
-          text: "Hour Tracker Work Report ($periodTitle)",
+          text: "Hour Metric Work Report ($periodTitle)",
         ),
       );
     } catch (e) {

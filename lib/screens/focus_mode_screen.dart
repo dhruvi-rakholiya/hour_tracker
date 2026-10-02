@@ -116,8 +116,9 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                           ignoring: !timerCtrl.showFocusControls,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // Exit Button
+                              // 1. Exit Button
                               CustomOpacityWidget(
                                 onTap: () {
                                   timerCtrl.toggleFocusMode(false);
@@ -131,8 +132,8 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: isLandscape ? 14.0 : 14.w,
-                                    vertical: isLandscape ? 8.0 : 8.h,
+                                    horizontal: isLandscape ? 12.0 : 10.w,
+                                    vertical: isLandscape ? 6.0 : 7.h,
                                   ),
                                   decoration: BoxDecoration(
                                     color: const Color(0xFF1E1F2E).withValues(alpha: 0.9),
@@ -142,8 +143,12 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.arrow_back_rounded, color: white, size: isLandscape ? 16.0 : 18.sp),
-                                      SizedBox(width: isLandscape ? 6.0 : 6.w),
+                                      Icon(
+                                        Icons.arrow_back_rounded,
+                                        color: white,
+                                        size: isLandscape ? 15.0 : 16.sp,
+                                      ),
+                                      SizedBox(width: isLandscape ? 5.0 : 5.w),
                                       Text(
                                         "Exit",
                                         style: TextStyle(
@@ -157,40 +162,57 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                                 ),
                               ),
 
-                              // Focus / Overtime Badge
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: isLandscape ? 12.0 : 12.w,
-                                  vertical: isLandscape ? 6.0 : 6.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: (timerCtrl.isOvertimeActive ? Colors.amber : primaryColor).withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(20.r),
-                                  border: Border.all(color: (timerCtrl.isOvertimeActive ? Colors.amber : primaryColor).withValues(alpha: 0.4)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      width: isLandscape ? 6.0 : 8.w,
-                                      height: isLandscape ? 6.0 : 8.w,
-                                      decoration: BoxDecoration(color: timerCtrl.isOvertimeActive ? Colors.amber[800] : primaryColor, shape: BoxShape.circle),
-                                    ),
-                                    SizedBox(width: isLandscape ? 6.0 : 6.w),
-                                    Text(
-                                      timerCtrl.isOvertimeActive ? "OVERTIME (1.5x)" : "FOCUS MODE",
-                                      style: TextStyle(
-                                        fontSize: isLandscape ? 11.0 : 11.sp,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.1,
-                                        color: timerCtrl.isOvertimeActive ? Colors.amber[900] ?? Colors.amber : primaryColor,
+                              // 2. Focus / Overtime Badge (Responsive Auto-Scaling)
+                              Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isLandscape ? 8.0 : 6.w,
+                                  ),
+                                  child: Center(
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: isLandscape ? 10.0 : 10.w,
+                                          vertical: isLandscape ? 6.0 : 6.h,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: (timerCtrl.isOvertimeActive ? Colors.amber : primaryColor).withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(20.r),
+                                          border: Border.all(
+                                            color: (timerCtrl.isOvertimeActive ? Colors.amber : primaryColor).withValues(alpha: 0.4),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              width: isLandscape ? 6.0 : 7.r,
+                                              height: isLandscape ? 6.0 : 7.r,
+                                              decoration: BoxDecoration(
+                                                color: timerCtrl.isOvertimeActive ? Colors.amber[800] : primaryColor,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            SizedBox(width: isLandscape ? 5.0 : 5.w),
+                                            Text(
+                                              timerCtrl.isOvertimeActive ? "OVERTIME (1.5x)" : "FOCUS MODE",
+                                              style: TextStyle(
+                                                fontSize: isLandscape ? 11.0 : 11.sp,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: isLandscape ? 0.8 : 1.0,
+                                                color: timerCtrl.isOvertimeActive ? (Colors.amber[900] ?? Colors.amber) : primaryColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
 
-                              // Orientation Switcher
+                              // 3. Orientation Switcher Button
                               CustomOpacityWidget(
                                 onTap: () {
                                   timerCtrl.toggleFocusOrientation();
@@ -198,8 +220,8 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: isLandscape ? 14.0 : 14.w,
-                                    vertical: isLandscape ? 8.0 : 8.h,
+                                    horizontal: isLandscape ? 12.0 : 10.w,
+                                    vertical: isLandscape ? 6.0 : 7.h,
                                   ),
                                   decoration: BoxDecoration(
                                     color: const Color(0xFF1E1F2E).withValues(alpha: 0.9),
@@ -214,9 +236,9 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                                             ? Icons.crop_portrait_rounded
                                             : Icons.crop_landscape_rounded,
                                         color: primaryColor,
-                                        size: isLandscape ? 16.0 : 18.sp,
+                                        size: isLandscape ? 15.0 : 16.sp,
                                       ),
-                                      SizedBox(width: isLandscape ? 6.0 : 6.w),
+                                      SizedBox(width: isLandscape ? 5.0 : 5.w),
                                       Text(
                                         timerCtrl.isHorizontalOrientation ? "Portrait" : "Landscape",
                                         style: TextStyle(

@@ -11,6 +11,7 @@ import 'package:hour_tracker/screens/focus_mode_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 import 'package:hour_tracker/utils/app_premium_helper.dart';
+import 'package:hour_tracker/utils/app_input_formatters.dart';
 
 class TimerTab extends StatefulWidget {
   const TimerTab({super.key});
@@ -38,11 +39,19 @@ class _TimerTabState extends State<TimerTab> {
           return Column(
             children: [
               // Header
-              CustomAppText(
-                text: AppStrings.activeTimer,
-                fontSize: 22.sp,
-                fontWeight: FontWeight.bold,
-                color: textPrimary,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: CustomAppText(
+                    text: AppStrings.activeTimer,
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.bold,
+                    color: textPrimary,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                  ),
+                ),
               ),
               SizedBox(height: 16.h),
 
@@ -267,20 +276,6 @@ class _TimerTabState extends State<TimerTab> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 6.w),
-                      Transform.scale(
-                        scale: 0.85,
-                        child: Switch.adaptive(
-                          value: timerCtrl.isFocusMode,
-                          activeThumbColor: primaryColor,
-                          onChanged: (val) {
-                            timerCtrl.toggleFocusMode(val);
-                            if (val) {
-                              Get.to(() => const FocusModeScreen());
-                            }
-                          },
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -492,6 +487,7 @@ class _TimerTabState extends State<TimerTab> {
                     TextField(
                       controller: _notesCtrl,
                       onChanged: timerCtrl.setNotes,
+                      inputFormatters: AppInputFormatters.notes(),
                       style: TextStyle(fontSize: 14.sp, color: textPrimary),
                       decoration: InputDecoration(
                         hintText: "Add notes for this timer shift...",

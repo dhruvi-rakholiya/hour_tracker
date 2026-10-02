@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/screens/main_dashboard_screen.dart';
+import 'package:hour_tracker/services/shared_preference_service.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -52,7 +53,8 @@ class _IntroScreenState extends State<IntroScreen> {
     }
   }
 
-  void _navigateToDashboard() {
+  Future<void> _navigateToDashboard() async {
+    await SharedPrefService.setIsFirstTime(false);
     Get.off(() => const MainDashboardScreen());
   }
 
@@ -89,7 +91,7 @@ class _IntroScreenState extends State<IntroScreen> {
               height: 260.r,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: accentColor.withValues(alpha: 0.05.sp),
+                color: accentColor.withValues(alpha: 0.05),
               ),
             ),
           ),
@@ -99,40 +101,50 @@ class _IntroScreenState extends State<IntroScreen> {
               children: [
                 // Top Header (Logo & Skip)
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 12.h,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(8.r),
-                            decoration: BoxDecoration(
-                              gradient: primaryGradient,
-                              borderRadius: BorderRadius.circular(12.r),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: primaryColor.withValues(alpha: 0.3),
-                                  blurRadius: 8.r,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(8.r),
+                              decoration: BoxDecoration(
+                                gradient: primaryGradient,
+                                borderRadius: BorderRadius.circular(12.r),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: primaryColor.withValues(alpha: 0.3),
+                                    blurRadius: 8.r,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                Icons.timer_rounded,
+                                color: white,
+                                size: 18.sp,
+                              ),
                             ),
-                            child: Icon(
-                              Icons.timer_rounded,
-                              color: white,
-                              size: 18.sp,
+                            SizedBox(width: 10.w),
+                            Expanded(
+                              child: CustomAppText(
+                                text: "Hour Metric",
+                                fontSize: 17.sp,
+                                fontWeight: FontWeight.bold,
+                                color: textPrimary,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 10.w),
-                          CustomAppText(
-                            text: "Hour Tracker",
-                            fontSize: 17.sp,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimary,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      SizedBox(width: 12.w),
                       CustomOpacityWidget(
                         onTap: _navigateToDashboard,
                         child: Container(
@@ -148,6 +160,7 @@ class _IntroScreenState extends State<IntroScreen> {
                             ),
                           ),
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               CustomAppText(
                                 text: "Skip",
@@ -183,12 +196,10 @@ class _IntroScreenState extends State<IntroScreen> {
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
                         child: Column(
                           children: [
-                            SizedBox(height: 10.h),
+                            // SizedBox(height: 10.h),
                             // Feature Visual Layout Canvas
                             Expanded(
-                              child: Center(
-                                child: _buildPageLayout(item.type),
-                              ),
+                              child: Center(child: _buildPageLayout(item.type)),
                             ),
                             SizedBox(height: 16.h),
 
@@ -216,13 +227,16 @@ class _IntroScreenState extends State<IntroScreen> {
                             SizedBox(height: 12.h),
 
                             // Title
-                            CustomAppText(
-                              text: item.title,
-                              fontSize: 21.sp,
-                              fontWeight: FontWeight.bold,
-                              color: textPrimary,
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.w),
+                              child: CustomAppText(
+                                text: item.title,
+                                fontSize: 21.sp,
+                                fontWeight: FontWeight.bold,
+                                color: textPrimary,
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                              ),
                             ),
 
                             SizedBox(height: 8.h),
@@ -249,7 +263,10 @@ class _IntroScreenState extends State<IntroScreen> {
 
                 // Bottom Floating Control Bar
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 16.h,
+                  ),
                   child: Column(
                     children: [
                       // Animated Indicator Dots
@@ -270,7 +287,9 @@ class _IntroScreenState extends State<IntroScreen> {
                               boxShadow: _currentPage == index
                                   ? [
                                       BoxShadow(
-                                        color: primaryColor.withValues(alpha: 0.5),
+                                        color: primaryColor.withValues(
+                                          alpha: 0.5,
+                                        ),
                                         blurRadius: 8.r,
                                         offset: const Offset(0, 2),
                                       ),
@@ -426,7 +445,10 @@ class _IntroScreenState extends State<IntroScreen> {
 
                 // Digital Timer Clock Display
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
+                  ),
                   decoration: BoxDecoration(
                     color: appBgColor,
                     borderRadius: BorderRadius.circular(18.r),
@@ -459,22 +481,27 @@ class _IntroScreenState extends State<IntroScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomAppText(
-                          text: "Mobile App Redesign",
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
-                        CustomAppText(
-                          text: "Rate: \$80.00 / hr",
-                          fontSize: 11.sp,
-                          color: textSecondary,
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomAppText(
+                            text: "Mobile App Redesign",
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimary,
+                            maxLines: 1,
+                          ),
+                          CustomAppText(
+                            text: "Rate: \$80.00 / hr",
+                            fontSize: 11.sp,
+                            color: textSecondary,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
                     ),
+                    SizedBox(width: 8.w),
                     Container(
                       padding: EdgeInsets.all(8.r),
                       decoration: BoxDecoration(
@@ -549,11 +576,7 @@ class _IntroScreenState extends State<IntroScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.bolt_rounded,
-                    color: accentColor,
-                    size: 16.sp,
-                  ),
+                  Icon(Icons.bolt_rounded, color: accentColor, size: 16.sp),
                   SizedBox(width: 4.w),
                   CustomAppText(
                     text: "Overtime 1.5x Active",
@@ -573,158 +596,159 @@ class _IntroScreenState extends State<IntroScreen> {
   // PAGE 2 LAYOUT: Interactive Project Hub & Dynamic Task Chips
   Widget _buildPage2ProjectsLayout() {
     return SizedBox(
-      height: 320.h,
+      height: 380.h,
       width: double.infinity,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Background Glow Aura
-          Container(
-            width: 260.r,
-            height: 260.r,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  accentColor.withValues(alpha: 0.2),
-                  Colors.transparent,
+          // Main Hero Project Hub Card
+          Padding(
+            padding:  EdgeInsets.symmetric(horizontal: 15.w),
+            child: Container(
+              width: Get.width,
+              padding: EdgeInsets.all(18.r),
+              decoration: BoxDecoration(
+                color: cardBgColor,
+                borderRadius: BorderRadius.circular(28.r),
+                border: Border.all(
+                  color: accentColor.withValues(alpha: 0.5),
+                  width: 1.5.w,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: shadowColor,
+                    blurRadius: 22.r,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Top Project Header Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(8.r),
+                              decoration: BoxDecoration(
+                                gradient: timerGradient,
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              child: Icon(
+                                Icons.dashboard_customize_rounded,
+                                color: white,
+                                size: 18.sp,
+                              ),
+                            ),
+                            SizedBox(width: 10.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomAppText(
+                                    text: "E-Commerce App",
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: textPrimary,
+                                    maxLines: 1,
+                                  ),
+                                  CustomAppText(
+                                    text: "Acme Corp • \$95.00/hr",
+                                    fontSize: 10.sp,
+                                    color: accentColor,
+                                    fontWeight: FontWeight.w600,
+                                    maxLines: 1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: successColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: CustomAppText(
+                          text: "ACTIVE",
+                          fontSize: 9.sp,
+                          fontWeight: FontWeight.bold,
+                          color: successColor,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 14.h),
+
+                  // Task Chips Section
+                  CustomAppText(
+                    text: "Project Sub-tasks & Shift Items",
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.bold,
+                    color: textMuted,
+                  ),
+
+                  SizedBox(height: 8.h),
+
+                  // Task Chip 1
+                  _buildTaskChip("UI Design Systems", "3.5 hrs", true),
+                  SizedBox(height: 6.h),
+                  // Task Chip 2
+                  _buildTaskChip("Backend API Integration", "4.0 hrs", true),
+                  SizedBox(height: 6.h),
+                  // Task Chip 3
+                  _buildTaskChip("Client Review Session", "1.0 hr", false),
+
+                  SizedBox(height: 12.h),
+
+                  // Shift Summary Footer
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 8.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: appBgColor,
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CustomAppText(
+                          text: "Total Today: 8.5 Hours",
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.bold,
+                          color: textPrimary,
+                        ),
+                        CustomAppText(
+                          text: "\$807.50",
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.bold,
+                          color: successColor,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
 
-          // Main Hero Project Hub Card
-          Container(
-            width: 280.w,
-            padding: EdgeInsets.all(18.r),
-            decoration: BoxDecoration(
-              color: cardBgColor,
-              borderRadius: BorderRadius.circular(28.r),
-              border: Border.all(
-                color: accentColor.withValues(alpha: 0.5),
-                width: 1.5.w,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: shadowColor,
-                  blurRadius: 22.r,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Top Project Header Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(8.r),
-                          decoration: BoxDecoration(
-                            gradient: timerGradient,
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          child: Icon(
-                            Icons.dashboard_customize_rounded,
-                            color: white,
-                            size: 18.sp,
-                          ),
-                        ),
-                        SizedBox(width: 10.w),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomAppText(
-                              text: "E-Commerce App",
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold,
-                              color: textPrimary,
-                            ),
-                            CustomAppText(
-                              text: "Acme Corp • \$95.00/hr",
-                              fontSize: 10.sp,
-                              color: accentColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: successColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: CustomAppText(
-                        text: "ACTIVE",
-                        fontSize: 9.sp,
-                        fontWeight: FontWeight.bold,
-                        color: successColor,
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 14.h),
-
-                // Task Chips Section
-                CustomAppText(
-                  text: "Project Sub-tasks & Shift Items",
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                  color: textMuted,
-                ),
-
-                SizedBox(height: 8.h),
-
-                // Task Chip 1
-                _buildTaskChip("UI Design Systems", "3.5 hrs", true),
-                SizedBox(height: 6.h),
-                // Task Chip 2
-                _buildTaskChip("Backend API Integration", "4.0 hrs", true),
-                SizedBox(height: 6.h),
-                // Task Chip 3
-                _buildTaskChip("Client Review Session", "1.0 hr", false),
-
-                SizedBox(height: 12.h),
-
-                // Shift Summary Footer
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                  decoration: BoxDecoration(
-                    color: appBgColor,
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomAppText(
-                        text: "Total Today: 8.5 Hours",
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.bold,
-                        color: textPrimary,
-                      ),
-                      CustomAppText(
-                        text: "\$807.50",
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.bold,
-                        color: successColor,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
           // Floating Top-Left Badge (Calendar Shift)
           Positioned(
-            top: 5.h,
+            top: 0.h,
             left: 5.w,
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
@@ -761,7 +785,7 @@ class _IntroScreenState extends State<IntroScreen> {
 
           // Floating Bottom-Right Badge (Budget Progress)
           Positioned(
-            bottom: 5.h,
+            bottom: 0.h,
             right: 5.w,
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
@@ -816,7 +840,9 @@ class _IntroScreenState extends State<IntroScreen> {
           Row(
             children: [
               Icon(
-                isDone ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+                isDone
+                    ? Icons.check_circle_rounded
+                    : Icons.radio_button_unchecked_rounded,
                 color: isDone ? successColor : textMuted,
                 size: 14.sp,
               ),
@@ -927,7 +953,10 @@ class _IntroScreenState extends State<IntroScreen> {
 
                 // Chart Bars Representation
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8.w,
+                    vertical: 10.h,
+                  ),
                   decoration: BoxDecoration(
                     color: appBgColor,
                     borderRadius: BorderRadius.circular(16.r),
@@ -1042,11 +1071,7 @@ class _IntroScreenState extends State<IntroScreen> {
   }
 }
 
-enum IntroMockupType {
-  timer,
-  projectsAndLogs,
-  reportsAndPdf,
-}
+enum IntroMockupType { timer, projectsAndLogs, reportsAndPdf }
 
 class IntroItemData {
   final String stepText;

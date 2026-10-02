@@ -28,7 +28,7 @@ const Color borderColor = Color(0xFFE2E8F0);
 const Color shadowColor = Color(0x1A6C5CE7);
 
 const LinearGradient primaryGradient = LinearGradient(
-  colors: [Color(0xFF6C5CE7), Color(0xFF4834DF)],
+  colors: [Color(0xFF8172F8), Color(0xFF6C5CE7), Color(0xFF4834DF)],
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
 );

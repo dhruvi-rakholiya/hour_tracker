@@ -58,13 +58,14 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
     return UpgradeAlert(
       child: SafeArea(
         top: false,
+        // bottom: false,
         child: Scaffold(
           backgroundColor: appBgColor,
           extendBody: true,
           body: IndexedStack(
             index: _currentIndex,
             children: tabs,
-          ).paddingOnly(top: 20.h),
+          ).paddingOnly(top: 30.h),
           bottomNavigationBar: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

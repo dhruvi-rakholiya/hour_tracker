@@ -34,22 +34,32 @@ class DashboardTab extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomAppText(
-                      text: AppStrings.appName,
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimary,
-                    ),
-                    SizedBox(height: 2.h),
-                    CustomAppText(
-                      text: "Track hours, calculate earnings & export reports",
-                      fontSize: 12.sp,
-                      color: textSecondary,
-                    ),
-                  ],
+                child: Padding(
+                  padding: EdgeInsets.only(right: 8.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FittedBox(
+                        alignment: Alignment.centerLeft,
+                        fit: BoxFit.scaleDown,
+                        child: CustomAppText(
+                          text: AppStrings.appName,
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.bold,
+                          color: textPrimary,
+                          maxLines: 1,
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      CustomAppText(
+                        text: "Track hours & calculate earnings",
+                        fontSize: 12.sp,
+                        color: textSecondary,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Row(
@@ -59,21 +69,15 @@ class DashboardTab extends StatelessWidget {
                     onTap: () => Get.to(() => const PremiumScreen()),
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: 10.w,
-                        vertical: 9.h,
+                        horizontal: 13.w,
+                        vertical: 5.h,
                       ),
                       decoration: BoxDecoration(
                         gradient: goldGradient,
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(7.r),
                       ),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.workspace_premium_rounded,
-                            color: white,
-                            size: 16.sp,
-                          ),
-                          SizedBox(width: 4.w),
                           CustomAppText(
                             text: "PRO",
                             fontSize: 12.sp,
@@ -111,69 +115,49 @@ class DashboardTab extends StatelessWidget {
 
           SizedBox(height: 16.h),
 
-          // Getting Started Onboarding Hero Banner (When 0 Projects exist)
+          // Getting Started Onboarding Hero Banner (When 0 Projects exist) - Subtle & Minimal
           GetBuilder<ProjectController>(
             builder: (projCtrl) {
               if (projCtrl.projects.isNotEmpty) return const SizedBox.shrink();
               return Container(
                 width: double.infinity,
-                margin: EdgeInsets.only(bottom: 20.h),
-                padding: EdgeInsets.all(20.r),
+                margin: EdgeInsets.only(bottom: 16.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [const Color(0xFF4834DF), const Color(0xFF6C5CE7)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                  color: cardBgColor,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(
+                    color: primaryColor.withValues(alpha: 0.18),
                   ),
-                  borderRadius: BorderRadius.circular(20.r),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(10.r),
-                          decoration: BoxDecoration(
-                            color: white.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.rocket_launch_rounded,
-                            color: accentColor,
-                            size: 24.sp,
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CustomAppText(
-                                text: "Welcome to Hour Tracker! 👋",
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                                color: white,
-                              ),
-                              SizedBox(height: 2.h),
-                              CustomAppText(
-                                text: "Let's set up your first project to get started",
-                                fontSize: 12.sp,
-                                color: white.withValues(alpha: 0.85),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    Icon(
+                      Icons.rocket_launch_rounded,
+                      color: primaryColor,
+                      size: 27.sp,
                     ),
-                    SizedBox(height: 16.h),
-                    CustomAppText(
-                      text:
-                          "• Step 1: Create a Project & set hourly rate\n• Step 2: Track hours using Live Timer or manual entries\n• Step 3: View analytics & export PDF reports",
-                      fontSize: 12.sp,
-                      color: white.withValues(alpha: 0.9),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomAppText(
+                            text: "Welcome to Hour Metric! 👋",
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimary,
+                          ),
+                          SizedBox(height: 2.h),
+                          CustomAppText(
+                            text: "Create a project to start logging hours & earnings",
+                            fontSize: 11.5.sp,
+                            color: textSecondary,
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(width: 8.w),
                     CustomOpacityWidget(
                       onTap: () {
                         if (AppPremiumHelper.checkProjectLimitAndPrompt(context)) {
@@ -182,27 +166,27 @@ class DashboardTab extends StatelessWidget {
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
-                          vertical: 12.h,
-                          horizontal: 16.w,
+                          vertical: 4.h,
+                          horizontal: 7.w,
                         ),
                         decoration: BoxDecoration(
-                          color: white,
-                          borderRadius: BorderRadius.circular(12.r),
+                          color: primaryColor,
+                          borderRadius: BorderRadius.circular(10.r),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.add_circle_outline_rounded,
-                              color: primaryColor,
-                              size: 18.sp,
+                              Icons.add_rounded,
+                              color: white,
+                              size: 16.sp,
                             ),
-                            SizedBox(width: 8.w),
+                            SizedBox(width: 3.w),
                             CustomAppText(
-                              text: "Create First Project",
+                              text: "Add",
                               fontSize: 13.sp,
                               fontWeight: FontWeight.bold,
-                              color: primaryColor,
+                              color: white,
                             ),
                           ],
                         ),
@@ -233,19 +217,12 @@ class DashboardTab extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Container(
-                              padding: EdgeInsets.all(10.r),
-                              decoration: BoxDecoration(
-                                color: white.withValues(alpha: 0.2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                timerCtrl.isPaused
-                                    ? Icons.pause_rounded
-                                    : Icons.timer_rounded,
-                                color: white,
-                                size: 24.sp,
-                              ),
+                            Icon(
+                              timerCtrl.isPaused
+                                  ? Icons.pause_rounded
+                                  : Icons.timer_rounded,
+                              color: white,
+                              size: 27.sp,
                             ),
                             SizedBox(width: 12.w),
                             Column(
@@ -283,49 +260,7 @@ class DashboardTab extends StatelessWidget {
             },
           ),
 
-          // Prominent Content Add Log Action Card (Shadow-Free)
-          CustomOpacityWidget(
-            onTap: () => Get.to(() => const AddEditEntryScreen()),
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-              decoration: BoxDecoration(
-                gradient: primaryGradient,
-                borderRadius: BorderRadius.circular(16.r),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8.r),
-                    decoration: BoxDecoration(
-                      color: white.withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.add_rounded, color: white, size: 20.sp),
-                  ),
-                  SizedBox(width: 12.w),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomAppText(
-                        text: "Log Work Hours Manually",
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                        color: white,
-                      ),
-                      CustomAppText(
-                        text: "Add past shift duration, rates & task notes",
-                        fontSize: 11.sp,
-                        color: white.withValues(alpha: 0.85),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
 
-          SizedBox(height: 16.h),
 
           // Quick Action Shortcuts Bar (Shadow-Free)
           Container(
@@ -342,17 +277,10 @@ class DashboardTab extends StatelessWidget {
                   onTap: () => onNavigateToTab(1), // Go to Timer tab
                   child: Column(
                     children: [
-                      Container(
-                        padding: EdgeInsets.all(10.r),
-                        decoration: BoxDecoration(
-                          color: primaryColor.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.play_arrow_rounded,
-                          color: primaryColor,
-                          size: 22.sp,
-                        ),
+                      Icon(
+                        Icons.play_arrow_rounded,
+                        color: primaryColor,
+                        size: 30.sp,
                       ),
                       SizedBox(height: 4.h),
                       CustomAppText(
@@ -369,17 +297,10 @@ class DashboardTab extends StatelessWidget {
                   onTap: () => Get.to(() => const AddEditEntryScreen()),
                   child: Column(
                     children: [
-                      Container(
-                        padding: EdgeInsets.all(10.r),
-                        decoration: BoxDecoration(
-                          color: billableColor.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.edit_note_rounded,
-                          color: billableColor,
-                          size: 22.sp,
-                        ),
+                      Icon(
+                        Icons.edit_note_rounded,
+                        color: billableColor,
+                        size: 30.sp,
                       ),
                       SizedBox(height: 4.h),
                       CustomAppText(
@@ -400,17 +321,10 @@ class DashboardTab extends StatelessWidget {
                   },
                   child: Column(
                     children: [
-                      Container(
-                        padding: EdgeInsets.all(10.r),
-                        decoration: BoxDecoration(
-                          color: accentColor.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.create_new_folder_rounded,
-                          color: primaryDark,
-                          size: 22.sp,
-                        ),
+                      Icon(
+                        Icons.create_new_folder_rounded,
+                        color: primaryDark,
+                        size: 30.sp,
                       ),
                       SizedBox(height: 4.h),
                       CustomAppText(

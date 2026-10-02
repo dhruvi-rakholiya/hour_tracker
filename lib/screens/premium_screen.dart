@@ -60,7 +60,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
     AdsVariable.isPurchase = true;
     Get.snackbar(
       "PRO Activated!",
-      "Thank you for subscribing to Hour Tracker PRO!",
+      "Thank you for subscribing to Hour Metric PRO!",
       backgroundColor: primaryColor,
       colorText: white,
       snackPosition: SnackPosition.BOTTOM,
@@ -84,7 +84,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
               height: 260.r,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: primaryColor.withValues(alpha: 0.06),
+                color: primaryColor.withValues(alpha: 0.04),
               ),
             ),
           ),
@@ -96,7 +96,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
               height: 280.r,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: accentColor.withValues(alpha: 0.05),
+                color: accentColor.withValues(alpha: 0.04),
               ),
             ),
           ),
@@ -110,33 +110,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 14.w, vertical: 6.h),
-                        decoration: BoxDecoration(
-                          color: primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16.r),
-                          border: Border.all(
-                            color: primaryColor.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.workspace_premium_rounded,
-                              color: primaryColor,
-                              size: 16.sp,
-                            ),
-                            SizedBox(width: 6.w),
-                            CustomAppText(
-                              text: "HOUR TRACKER PRO",
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.bold,
-                              color: primaryColor,
-                            ),
-                          ],
-                        ),
-                      ),
+                     SizedBox(),
                       CustomOpacityWidget(
                         onTap: () => Get.back(),
                         child: Container(
@@ -159,19 +133,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                   const Spacer(),
 
                   // Hero Crown Section
-                  Container(
-                    width: 80.r,
-                    height: 80.r,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: primaryGradient,
-                    ),
-                    child: Icon(
-                      Icons.workspace_premium_rounded,
-                      size: 46.sp,
-                      color: white,
-                    ),
-                  ),
+                  Image.asset("assets/images/crownIcn.png",height: 90.h,width: 90.w,),
 
                   SizedBox(height: 12.h),
 
@@ -230,7 +192,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                         title: "Yearly Pass",
                         price: yearlyPrice,
                         subPrice: "$currencySymbol$perWeekPrice / week",
-                        badgeText: "SAVE $discountPercentage% • BEST VALUE",
+                        badgeText: "SAVE $discountPercentage%",
                       ),
 
                       SizedBox(height: 12.h),
@@ -456,10 +418,10 @@ class _PremiumScreenState extends State<PremiumScreen> {
           // Top Right Highlight Badge
           if (badgeText != null)
             Positioned(
-              top: -8.h,
+              top: -9.h,
               right: 14.w,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 3.h),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
                 decoration: BoxDecoration(
                   gradient: primaryGradient,
                   borderRadius: BorderRadius.circular(10.r),
@@ -608,8 +570,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
     log("getPremiumVersion selectedPackage :- $selectedPackage");
 
     try {
-      final customerInfo = await Purchases.purchase(PurchaseParams.package(selectedPackage!));
-      appData.entitlementIsActive = customerInfo.customerInfo.entitlements.all[entitlementKey]!.isActive;
+      final purchaseResult = await Purchases.purchasePackage(selectedPackage!);
+      appData.entitlementIsActive = purchaseResult.customerInfo.entitlements.all[entitlementKey]?.isActive ?? false;
       if(!mounted) return;
       initPlatformState(context);
     } on PlatformException catch (e) {

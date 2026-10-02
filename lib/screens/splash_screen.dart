@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +16,8 @@ import 'package:hour_tracker/firebase_analysis.dart';
 import 'package:hour_tracker/for_ads/ads/ads_splash_utils.dart';
 import 'package:hour_tracker/for_ads/ads/ads_variable.dart';
 import 'package:hour_tracker/screens/intro_screen.dart';
+import 'package:hour_tracker/screens/main_dashboard_screen.dart';
+import 'package:hour_tracker/services/shared_preference_service.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -48,61 +51,54 @@ class _SplashScreenState extends State<SplashScreen> {
           Get.put(TimeEntryController());
           Get.put(TimerController());
           Get.put(ReportController());
-          // Direct Navigation to IntroScreen
-          Get.off(() => const IntroScreen());
+          navigatingToNextActivity();
         },
       );
     });
   }
 
-  // void navigatingToNextActivity() async {
-  //   bool isFirstLaunch = SharedPrefService.getIsFirsTime();
-  //   if (isFirstLaunch) {
-  //     Get.offAll(() => const SurveyScreen());
-  //   } else {
-  //     if (AdsVariable.isPurchase) {
-  //       Get.offAll(() => BottomBarScreen());
-  //     } else {
-  //       Get.offAll(() => PremiumScreen(isFromIntroAndSplash: true));
-  //     }
-  //   }
-  // }
+  void navigatingToNextActivity() async {
+    bool isFirstLaunch = SharedPrefService.getIsFirsTime();
+    if (isFirstLaunch) {
+      Get.offAll(() => const IntroScreen());
+    } else {
+      Get.offAll(() => MainDashboardScreen());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor,
+      backgroundColor: appBgColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: EdgeInsets.all(20.r),
-              decoration: BoxDecoration(
-                color: white.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.access_time_filled_rounded,
-                size: 72.sp,
-                color: white,
+            // Centered App Logo
+            ClipRRect(
+              borderRadius: BorderRadius.circular(22.r),
+              child: Image.asset(
+                'assets/images/appLogo.png',
+                width: 88.r,
+                height: 88.r,
+                fit: BoxFit.contain,
               ),
             ),
-            SizedBox(height: 24.h),
+            SizedBox(height: 20.h),
+            // App Name
             CustomAppText(
               text: AppStrings.appName,
-              fontSize: 28.sp,
+              fontSize: 24.sp,
               fontWeight: FontWeight.bold,
-              color: white,
+              color: textPrimary,
+              letterSpacing: 0.4,
             ),
-            SizedBox(height: 8.h),
-            CustomAppText(
-              text: "Professional Work & Earnings Tracker",
-              fontSize: 14.sp,
-              color: white.withValues(alpha: 0.8),
+            SizedBox(height: 36.h),
+            // Cupertino Loader
+            CupertinoActivityIndicator(
+              radius: 13.r,
+              color: primaryColor,
             ),
-            SizedBox(height: 48.h),
-            CircularProgressIndicator(color: white, strokeWidth: 3.w),
           ],
         ),
       ),

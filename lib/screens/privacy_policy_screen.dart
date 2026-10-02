@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hour_tracker/common_widgets/app_text.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:hour_tracker/common_widgets/screen_app_bar_title.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
   const PrivacyPolicyScreen({super.key});
@@ -86,11 +86,8 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
           ),
           onPressed: () => Get.back(),
         ),
-        title: CustomAppText(
+        title: const ScreenAppBarTitle(
           text: "Privacy Policy",
-          fontSize: 18.sp,
-          fontWeight: FontWeight.bold,
-          color: textPrimary,
         ),
       ),
       body: Obx(

@@ -13,6 +13,7 @@ import 'package:hour_tracker/common_widgets/custom_opacity.dart';
 import 'package:hour_tracker/screens/premium_screen.dart';
 import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:hour_tracker/common_widgets/screen_app_bar_title.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -99,7 +100,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   SizedBox(height: 10.h),
                   const CustomAppText(
-                    text: "Enjoying Hour Tracker?",
+                    text: "Enjoying Hour Metric?",
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
@@ -192,11 +193,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           onPressed: () => Get.back(),
         ),
-        title: CustomAppText(
+        title: const ScreenAppBarTitle(
           text: "Settings",
-          fontSize: 18.sp,
-          fontWeight: FontWeight.bold,
-          color: textPrimary,
         ),
       ),
       body: SingleChildScrollView(
@@ -204,112 +202,127 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // High-Premium PRO Banner Card with app primary theme gradient background
+            // Creative Minimal PRO Banner Card (Subtle, Shadow-Free, Medium Height)
             CustomOpacityWidget(
               onTap: () => Get.to(() => const PremiumScreen()),
               child: Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(20.r),
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
                 decoration: BoxDecoration(
-                  gradient: primaryGradient,
-                  borderRadius: BorderRadius.circular(22.r),
+                  gradient: LinearGradient(
+                    colors: [
+                      cardBgColor,
+                      primaryLight.withValues(alpha: 0.08),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(
+                    color: primaryColor.withValues(alpha: 0.22),
+                    width: 1.2.w,
+                  ),
                 ),
-                child: Stack(
+                child: Row(
                   children: [
-                    // Ambient Background Decorative Circle
-                    Positioned(
-                      right: -20.w,
-                      top: -20.h,
-                      child: Container(
-                        width: 100.r,
-                        height: 100.r,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: white.withValues(alpha: 0.12),
+                    Container(
+                      width: 44.r,
+                      height: 44.r,
+                      decoration: BoxDecoration(
+                        color: primaryColor.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                          color: primaryColor.withValues(alpha: 0.15),
+                          width: 1.w,
+                        ),
+                      ),
+                      child: Center(
+                        child: Image.asset(
+                          "assets/images/crownIcn.png",
+                          height: 34.r,
+                          width: 34.r,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
+                    SizedBox(width: 12.w),
 
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(10.r),
-                              decoration: BoxDecoration(
-                                color: white.withValues(alpha: 0.22),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.workspace_premium_rounded,
-                                color: white,
-                                size: 26.sp,
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10.w,
-                                vertical: 4.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                              child: CustomAppText(
-                                text: "PRO UNLOCKED",
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.bold,
-                                color: white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 14.h),
-                        CustomAppText(
-                          text: "Upgrade to Hour Tracker PRO",
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.bold,
-                          color: white,
-                        ),
-                        SizedBox(height: 4.h),
-                        CustomAppText(
-                          text:
-                              "Unlock 100% ad-free experience, unlimited PDF report exports & advanced overtime calculator rules.",
-                          fontSize: 12.sp,
-                          color: white.withValues(alpha: 0.92),
-                          maxLines: 2,
-                        ),
-                        SizedBox(height: 16.h),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 14.w,
-                            vertical: 8.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: white,
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                    // Title & Minimal Subtitle
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
                             children: [
                               CustomAppText(
-                                text: "Explore PRO Features",
-                                fontSize: 12.sp,
+                                text: "Hour Metric PRO",
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.bold,
-                                color: primaryColor,
+                                color: textPrimary,
                               ),
                               SizedBox(width: 6.w),
-                              Icon(
-                                Icons.arrow_forward_rounded,
-                                color: primaryColor,
-                                size: 14.sp,
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 5.w,
+                                  vertical: 2.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: goldGradient,
+                                  borderRadius: BorderRadius.circular(6.r),
+                                ),
+                                child: Text(
+                                  "PRO",
+                                  style: TextStyle(
+                                    fontSize: 8.5.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: white,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 3.h),
+                          CustomAppText(
+                            text: "Ad-free & unlimited access",
+                            fontSize: 11.5.sp,
+                            color: textSecondary,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(width: 8.w),
+
+                    // Compact PRO Button (Shadow-Free)
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 13.w,
+                        vertical: 8.h,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: primaryGradient,
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CustomAppText(
+                            text: "Upgrade",
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                            color: white,
+                          ),
+                          SizedBox(width: 4.w),
+                          Icon(
+                            Icons.arrow_forward_rounded,
+                            color: white,
+                            size: 13.sp,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -344,7 +357,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     iconColor: primaryColor,
                     title: "Share App",
                     subtitle:
-                        "Tell your colleagues and friends about Hour Tracker",
+                        "Tell your colleagues and friends about Hour Metric",
                     onTap: shareAppOnTap,
                   ),
 

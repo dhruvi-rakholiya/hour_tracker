@@ -11,6 +11,8 @@ import 'package:hour_tracker/utils/app_colors.dart';
 import 'package:hour_tracker/utils/app_strings.dart';
 import 'package:hour_tracker/utils/app_show_toast.dart';
 import 'package:hour_tracker/utils/app_premium_helper.dart';
+import 'package:hour_tracker/common_widgets/screen_app_bar_title.dart';
+import 'package:hour_tracker/utils/app_input_formatters.dart';
 
 class AddEditProjectScreen extends StatefulWidget {
   final ProjectModel? existingProject;
@@ -146,11 +148,8 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
             );
           },
         ),
-        title: CustomAppText(
+        title: ScreenAppBarTitle(
           text: isEditing ? AppStrings.editProject : AppStrings.addProject,
-          fontSize: 18.sp,
-          fontWeight: FontWeight.bold,
-          color: textPrimary,
         ),
         centerTitle: true,
       ),
@@ -174,6 +173,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   SizedBox(height: 8.h),
                   TextField(
                     controller: _nameCtrl,
+                    inputFormatters: AppInputFormatters.singleLineText(maxLength: 60),
                     style: TextStyle(fontSize: 15.sp, color: textPrimary),
                     decoration: InputDecoration(
                       hintText: "e.g. Mobile App Redesign",
@@ -187,6 +187,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   SizedBox(height: 8.h),
                   TextField(
                     controller: _clientCtrl,
+                    inputFormatters: AppInputFormatters.singleLineText(maxLength: 60),
                     style: TextStyle(fontSize: 15.sp, color: textPrimary),
                     decoration: InputDecoration(
                       hintText: "e.g. Acme Corp",
@@ -206,7 +207,8 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                             SizedBox(height: 8.h),
                             TextField(
                               controller: _rateCtrl,
-                              keyboardType: TextInputType.number,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              inputFormatters: [AppInputFormatters.rate()],
                               style: TextStyle(fontSize: 15.sp, color: textPrimary),
                               decoration: InputDecoration(
                                 prefixText: "\$ ",
@@ -225,7 +227,8 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                             SizedBox(height: 8.h),
                             TextField(
                               controller: _targetCtrl,
-                              keyboardType: TextInputType.number,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              inputFormatters: [AppInputFormatters.projectHours()],
                               style: TextStyle(fontSize: 15.sp, color: textPrimary),
                               decoration: InputDecoration(
                                 suffixText: "hrs",

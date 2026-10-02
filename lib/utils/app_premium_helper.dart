@@ -87,7 +87,7 @@ class AppPremiumHelper {
 
               CustomAppText(
                 text:
-                    "Free plan allows creating up to $freeProjectLimit projects. Upgrade to Hour Tracker PRO to create unlimited client projects!",
+                    "Free plan allows creating up to $freeProjectLimit projects. Upgrade to Hour Metric PRO to create unlimited client projects!",
                 fontSize: 13.sp,
                 color: textSecondary,
                 textAlign: TextAlign.center,
